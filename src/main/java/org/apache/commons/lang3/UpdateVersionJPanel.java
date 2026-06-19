@@ -165,9 +165,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			if (testAndGetAsBoolean(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 					() -> jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)) {
 				//
-				final File selectedFile = jfc.getSelectedFile();
-				//
-				setText(tfFile, isXml(selectedFile) ? getAbsolutePath(selectedFile) : null);
+				setText(tfFile, testAndApply(UpdateVersionJPanel::isXml, jfc.getSelectedFile(),
+						UpdateVersionJPanel::getAbsolutePath, null));
 				//
 			} // if
 				//
