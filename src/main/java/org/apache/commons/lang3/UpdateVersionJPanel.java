@@ -176,7 +176,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			if (!isFile(file)) {
 				//
-				if (!GraphicsEnvironment.isHeadless() && !isTestMode()) {
+				if (Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode())) {
 					//
 					JOptionPane.showMessageDialog(null, "Please select a file");
 					//
