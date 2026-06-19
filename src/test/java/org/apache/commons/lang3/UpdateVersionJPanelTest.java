@@ -26,8 +26,6 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.d2ab.function.ObjIntFunction;
-import org.d2ab.function.ObjIntPredicate;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -109,13 +107,11 @@ public class UpdateVersionJPanelTest {
 					//
 				} // if
 					//
-			} else if (Boolean.logicalOr(proxy instanceof Predicate, proxy instanceof ObjIntPredicate)
-					&& Objects.equals(name, "test")) {
+			} else if (proxy instanceof Predicate && Objects.equals(name, "test")) {
 				//
 				return test;
 				//
-			} else if (Boolean.logicalOr(proxy instanceof FailableFunction, proxy instanceof ObjIntFunction)
-					&& Objects.equals(name, "apply")) {
+			} else if (proxy instanceof FailableFunction && Objects.equals(name, "apply")) {
 				//
 				return null;
 				//
