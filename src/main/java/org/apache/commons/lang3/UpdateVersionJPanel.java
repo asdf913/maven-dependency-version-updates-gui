@@ -240,7 +240,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					final String versionNew = getText(tfVersion);
 					//
-					if (!Objects.equals(versionOld, versionNew) && !GraphicsEnvironment.isHeadless() && !isTestMode()
+					if (Boolean.logicalAnd(!Objects.equals(versionOld, versionNew), !GraphicsEnvironment.isHeadless())
+							&& !isTestMode()
 							&& JOptionPane.showConfirmDialog(null,
 									String.format("Update version number from \"%1$s\" to \"%2$s\"?", versionOld,
 											versionNew)) == JOptionPane.YES_OPTION) {
