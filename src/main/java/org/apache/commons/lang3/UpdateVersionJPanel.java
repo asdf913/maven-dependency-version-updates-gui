@@ -115,25 +115,29 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		add(new JLabel("File"));
 		//
-		add(tfFile = new JTextField(), "growx");
+		final String growx = "growx";
+		//
+		add(tfFile = new JTextField(), growx);
 		//
 		tfFile.setEditable(false);
 		//
-		add(btnFile = new JButton("File"), "wrap");
+		final String wrap = "wrap";
+		//
+		add(btnFile = new JButton("File"), wrap);
 		//
 		btnFile.addActionListener(this);
 		//
 		add(new JLabel("Group ID"));
 		//
-		add(tfGroupId = new JTextField(), "growx,wrap");
+		add(tfGroupId = new JTextField(), String.join(",", growx, wrap));
 		//
 		add(new JLabel("Artifact ID"));
 		//
-		add(tfArtifactId = new JTextField(), "growx,wrap");
+		add(tfArtifactId = new JTextField(), String.join(",", growx, wrap));
 		//
 		add(new JLabel("Version"));
 		//
-		add(tfVersion = new JTextField(), "growx,wrap");
+		add(tfVersion = new JTextField(), String.join(",", growx, wrap));
 		//
 		add(new JLabel());
 		//
