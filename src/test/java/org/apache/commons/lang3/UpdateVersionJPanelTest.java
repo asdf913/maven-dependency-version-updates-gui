@@ -265,7 +265,7 @@ public class UpdateVersionJPanelTest {
 					|| (parameterTypes = m.getParameterTypes()) == null
 					|| Boolean.logicalAnd(Objects.equals(name = getName(m), "toMap"),
 							Arrays.equals(parameterTypes, new Class[] { String[].class }))
-					|| Boolean.logicalAnd(Objects.equals(name = getName(m), "indexOf"),
+					|| Boolean.logicalAnd(Objects.equals(name, "indexOf"),
 							Arrays.equals(parameterTypes, new Class[] { String.class, String.class, Integer.TYPE }))) {
 				//
 				continue;
