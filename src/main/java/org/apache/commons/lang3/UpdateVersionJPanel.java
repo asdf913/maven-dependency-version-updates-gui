@@ -59,6 +59,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 2170500482514889468L;
 
+	private static final String GROUP_ID = "groupId";
+
 	private static class Dependency {
 
 		private String groupId;
@@ -231,7 +233,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					final String string = Files.readString(path);
 					//
 					final int index1 = indexOf(string,
-							String.format("<%1$s>%2$s</%1$s>", "groupId", getText(tfGroupId)));
+							String.format("<%1$s>%2$s</%1$s>", GROUP_ID, getText(tfGroupId)));
 					//
 					final int index2 = indexOf(string,
 							String.format("<%1$s>%2$s</%1$s>", "artifactId", getText(tfArtifactId)));
@@ -446,9 +448,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
-		if (containsKey(map, "groupId")) {
+		if (containsKey(map, GROUP_ID)) {
 			//
-			setText(instance.tfGroupId, get(map, "groupId"));
+			setText(instance.tfGroupId, get(map, GROUP_ID));
 			//
 		} // if
 			//
