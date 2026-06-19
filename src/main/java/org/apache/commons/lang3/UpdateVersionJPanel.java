@@ -61,6 +61,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static final String GROUP_ID = "groupId";
 
+	private static final String ARTIFACT_ID = "artifactId";
+
 	private static class Dependency {
 
 		private String groupId;
@@ -236,7 +238,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							String.format("<%1$s>%2$s</%1$s>", GROUP_ID, getText(tfGroupId)));
 					//
 					final int index2 = indexOf(string,
-							String.format("<%1$s>%2$s</%1$s>", "artifactId", getText(tfArtifactId)));
+							String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID, getText(tfArtifactId)));
 					//
 					final int index3 = indexOf(string, "<version>", Math.max(index1, index2)) + 9;
 					//
@@ -454,9 +456,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} // if
 			//
-		if (containsKey(map, "artifactId")) {
+		if (containsKey(map, ARTIFACT_ID)) {
 			//
-			setText(instance.tfArtifactId, get(map, "artifactId"));
+			setText(instance.tfArtifactId, get(map, ARTIFACT_ID));
 			//
 		} // if
 			//
