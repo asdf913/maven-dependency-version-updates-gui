@@ -174,7 +174,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
 			//
-			if (file == null || !file.isFile()) {
+			if (!isFile(file)) {
 				//
 				if (!GraphicsEnvironment.isHeadless() && !isTestMode()) {
 					//
@@ -271,6 +271,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static boolean isFile(final File instance) {
+		return instance != null && instance.getPath() != null && instance.isFile();
 	}
 
 	private static boolean testAndGetAsBoolean(final boolean condition, final BooleanSupplier booleanSupplier) {

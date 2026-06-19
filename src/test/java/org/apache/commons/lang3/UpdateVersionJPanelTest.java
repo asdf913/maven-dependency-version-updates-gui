@@ -38,8 +38,8 @@ import io.github.toolfactory.narcissus.Narcissus;
 
 public class UpdateVersionJPanelTest {
 
-	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS,
-			METHOD_TEST_AND_GET_AS_BOOLEAN = null;
+	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS, METHOD_TEST_AND_GET_AS_BOOLEAN,
+			METHOD_IS_FILE = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -56,6 +56,8 @@ public class UpdateVersionJPanelTest {
 		//
 		(METHOD_TEST_AND_GET_AS_BOOLEAN = clz.getDeclaredMethod("testAndGetAsBoolean", Boolean.TYPE,
 				BooleanSupplier.class)).setAccessible(true);
+		//
+		(METHOD_IS_FILE = clz.getDeclaredMethod("isFile", File.class)).setAccessible(true);
 		//
 	}
 
@@ -468,6 +470,13 @@ public class UpdateVersionJPanelTest {
 		Assert.assertEquals(METHOD_TEST_AND_GET_AS_BOOLEAN != null
 				? METHOD_TEST_AND_GET_AS_BOOLEAN.invoke(null, Boolean.TRUE, booleanSupplier)
 				: null, ih != null ? ih.getAsBoolean : null);
+		//
+	}
+
+	@Test
+	public void testIsFile() throws IllegalAccessException, InvocationTargetException {
+		//
+		Assert.assertEquals(METHOD_IS_FILE != null ? METHOD_IS_FILE.invoke(null, new File(".")) : null, Boolean.FALSE);
 		//
 	}
 
