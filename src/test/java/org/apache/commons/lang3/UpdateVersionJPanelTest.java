@@ -40,7 +40,7 @@ public class UpdateVersionJPanelTest {
 	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS = null;
 
 	@BeforeSuite
-	void beforeSuite() throws NoSuchMethodException, ClassNotFoundException {
+	void beforeSuite() throws NoSuchMethodException {
 		//
 		final Class<?> clz = UpdateVersionJPanel.class;
 		//
