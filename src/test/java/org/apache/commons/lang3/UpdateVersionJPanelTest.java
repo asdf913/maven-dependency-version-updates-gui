@@ -32,6 +32,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+import org.w3c.dom.NodeList;
 
 import com.google.common.reflect.Reflection;
 
@@ -70,6 +71,8 @@ public class UpdateVersionJPanelTest {
 	private static class IH implements InvocationHandler {
 
 		private Boolean test, containsKey, add, getAsBoolean;
+
+		private Integer length;
 
 		@Override
 		public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -138,6 +141,18 @@ public class UpdateVersionJPanelTest {
 				//
 				return getAsBoolean;
 				//
+			} else if (proxy instanceof NodeList) {
+				//
+				if (Objects.equals(name, "getLength")) {
+					//
+					return length;
+					//
+				} else if (Objects.equals(name, "item")) {
+					//
+					return null;
+					//
+				} // if
+					//
 			} // if
 				//
 			throw new Throwable(name);
@@ -292,6 +307,8 @@ public class UpdateVersionJPanelTest {
 			//
 			ih.test = ih.containsKey = ih.add = Boolean.FALSE;
 			//
+			ih.length = Integer.valueOf(0);
+			//
 		} // if
 			//
 		for (int i = 0; ms != null && i < ms.length; i++) {
@@ -342,6 +359,10 @@ public class UpdateVersionJPanelTest {
 				} else if (Objects.equals(parameterType, Boolean.TYPE)) {
 					//
 					add(collection, Boolean.valueOf(false));
+					//
+				} else if (Objects.equals(parameterType, Integer.TYPE)) {
+					//
+					add(collection, Integer.valueOf(0));
 					//
 				} else if (parameterType != null && parameterType.isArray()) {
 					//

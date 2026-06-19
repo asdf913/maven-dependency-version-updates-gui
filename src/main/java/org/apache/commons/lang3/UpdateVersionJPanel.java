@@ -197,10 +197,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				Collection<Dependency> dependencies = null;
 				//
-				for (int i = 0; nodeList != null && i < nodeList.getLength(); i++) {
+				for (int i = 0; i < getLength(nodeList); i++) {
 					//
 					(dependency = new Dependency()).groupId = Objects.toString(evaluate(xp,
-							"*[local-name()=\"groupId\"]", node = nodeList.item(i), XPathConstants.STRING));
+							"*[local-name()=\"groupId\"]", node = item(nodeList, i), XPathConstants.STRING));
 					//
 					dependency.artifactId = Objects
 							.toString(evaluate(xp, "*[local-name()=\"artifactId\"]", node, XPathConstants.STRING));
@@ -266,6 +266,14 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static Node item(final NodeList instance, final int index) {
+		return instance != null ? instance.item(index) : null;
+	}
+
+	private static int getLength(final NodeList instance) {
+		return instance != null ? instance.getLength() : 0;
 	}
 
 	private static void testAndRun(final boolean condition, final Runnable runnable) {
