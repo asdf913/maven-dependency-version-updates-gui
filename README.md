@@ -2,6 +2,7 @@
 
 ## Screen shot
 <img width="496" height="438" alt="image" src="https://github.com/user-attachments/assets/49f68f69-460b-4f73-941c-fff290955f76" />
+<img width="776" height="312" alt="image" src="https://github.com/user-attachments/assets/5a5a9a1a-211f-40ab-bfaa-3da64d8f01bf" />
 
 ## Sample Command
 ```
