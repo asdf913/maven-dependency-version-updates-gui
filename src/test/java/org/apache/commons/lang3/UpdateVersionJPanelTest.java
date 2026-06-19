@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -37,7 +38,8 @@ import io.github.toolfactory.narcissus.Narcissus;
 
 public class UpdateVersionJPanelTest {
 
-	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS = null;
+	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS,
+			METHOD_TEST_AND_GET_AS_BOOLEAN = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -52,11 +54,14 @@ public class UpdateVersionJPanelTest {
 		//
 		(METHOD_GET_CLASS = clz.getDeclaredMethod("getClass", Object.class)).setAccessible(true);
 		//
+		(METHOD_TEST_AND_GET_AS_BOOLEAN = clz.getDeclaredMethod("testAndGetAsBoolean", Boolean.TYPE,
+				BooleanSupplier.class)).setAccessible(true);
+		//
 	}
 
 	private static class IH implements InvocationHandler {
 
-		private Boolean test, containsKey, add;
+		private Boolean test, containsKey, add, getAsBoolean;
 
 		@Override
 		public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -115,6 +120,10 @@ public class UpdateVersionJPanelTest {
 				//
 				return null;
 				//
+			} else if (proxy instanceof BooleanSupplier && Objects.equals(name, "getAsBoolean")) {
+				//
+				return getAsBoolean;
+				//
 			} // if
 				//
 			throw new Throwable(name);
@@ -143,10 +152,14 @@ public class UpdateVersionJPanelTest {
 
 	private UpdateVersionJPanel instance = null;
 
+	private IH ih = null;
+
 	@BeforeMethod
 	void beforeMethod() throws Throwable {
 		//
 		instance = cast(UpdateVersionJPanel.class, Narcissus.allocateInstance(UpdateVersionJPanel.class));
+		//
+		ih = new IH();
 		//
 	}
 
@@ -178,6 +191,8 @@ public class UpdateVersionJPanelTest {
 		//
 		Class<?>[] parameterTypes = null;
 		//
+		Class<?> parameterType = null;
+		//
 		Collection<Object> collection = null;
 		//
 		Object[] os = null;
@@ -195,9 +210,13 @@ public class UpdateVersionJPanelTest {
 			//
 			for (int j = 0; j < parameterTypes.length; j++) {
 				//
-				if (Objects.equals(ArrayUtils.get(parameterTypes, j), Integer.TYPE)) {
+				if (Objects.equals(parameterType = ArrayUtils.get(parameterTypes, j), Integer.TYPE)) {
 					//
 					add(collection, Integer.valueOf(0));
+					//
+				} else if (Objects.equals(parameterType, Boolean.TYPE)) {
+					//
+					add(collection, Boolean.valueOf(false));
 					//
 				} else {
 					//
@@ -255,10 +274,12 @@ public class UpdateVersionJPanelTest {
 		//
 		Object[] os = null;
 		//
-		final IH ih = new IH();
-		//
-		ih.test = ih.containsKey = ih.add = Boolean.FALSE;
-		//
+		if ((ih = ObjectUtils.getIfNull(ih, IH::new)) != null) {
+			//
+			ih.test = ih.containsKey = ih.add = Boolean.FALSE;
+			//
+		} // if
+			//
 		for (int i = 0; ms != null && i < ms.length; i++) {
 			//
 			if ((m = ArrayUtils.get(ms, i)) == null || m.isSynthetic()
@@ -299,6 +320,10 @@ public class UpdateVersionJPanelTest {
 				} else if (Objects.equals(parameterType, JTextComponent.class)) {
 					//
 					add(collection, new JTextField());
+					//
+				} else if (Objects.equals(parameterType, Boolean.TYPE)) {
+					//
+					add(collection, Boolean.valueOf(false));
 					//
 				} else if (parameterType != null && parameterType.isArray()) {
 					//
@@ -411,6 +436,38 @@ public class UpdateVersionJPanelTest {
 		FieldUtils.writeDeclaredField(instance, "tfArtifactId", new JTextField("commons-lang3"), true);
 		//
 		instance.actionPerformed(actionEvent);
+		//
+	}
+
+	@Test
+	public void testTestAndGetAsBoolean() throws IllegalAccessException, InvocationTargetException {
+		//
+		Assert.assertEquals(
+				METHOD_TEST_AND_GET_AS_BOOLEAN != null ? METHOD_TEST_AND_GET_AS_BOOLEAN.invoke(null, Boolean.TRUE, null)
+						: null,
+				Boolean.FALSE);
+		//
+		if ((ih = ObjectUtils.getIfNull(ih, IH::new)) != null) {
+			//
+			ih.getAsBoolean = Boolean.FALSE;
+			//
+		} // if
+			//
+		final BooleanSupplier booleanSupplier = Reflection.newProxy(BooleanSupplier.class, ih);
+		//
+		Assert.assertEquals(METHOD_TEST_AND_GET_AS_BOOLEAN != null
+				? METHOD_TEST_AND_GET_AS_BOOLEAN.invoke(null, Boolean.TRUE, booleanSupplier)
+				: null, ih != null ? ih.getAsBoolean : null);
+		//
+		if ((ih = ObjectUtils.getIfNull(ih, IH::new)) != null) {
+			//
+			ih.getAsBoolean = Boolean.TRUE;
+			//
+		} // if
+			//
+		Assert.assertEquals(METHOD_TEST_AND_GET_AS_BOOLEAN != null
+				? METHOD_TEST_AND_GET_AS_BOOLEAN.invoke(null, Boolean.TRUE, booleanSupplier)
+				: null, ih != null ? ih.getAsBoolean : null);
 		//
 	}
 

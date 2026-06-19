@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -161,8 +162,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			final JFileChooser jfc = new JFileChooser(".");
 			//
-			if (Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode())
-					&& jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			if (testAndGetAsBoolean(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
+					() -> jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)) {
 				//
 				final File selectedFile = jfc.getSelectedFile();
 				//
@@ -271,6 +272,12 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static boolean testAndGetAsBoolean(final boolean condition, final BooleanSupplier booleanSupplier) {
+		//
+		return condition && booleanSupplier != null && booleanSupplier.getAsBoolean();
+		//
 	}
 
 	private static Object getSource(final EventObject instance) {
