@@ -163,26 +163,21 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			final JFileChooser jfc = new JFileChooser(".");
 			//
-			if (testAndGetAsBoolean(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
-					() -> jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)) {
-				//
-				setText(tfFile, testAndApply(UpdateVersionJPanel::isXml, jfc.getSelectedFile(),
-						UpdateVersionJPanel::getAbsolutePath, null));
-				//
-			} // if
-				//
+			testAndRun(
+					testAndGetAsBoolean(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
+							() -> jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION),
+					() -> setText(tfFile, testAndApply(UpdateVersionJPanel::isXml, jfc.getSelectedFile(),
+							UpdateVersionJPanel::getAbsolutePath, null)));
+			//
 		} else if (Objects.equals(source, btnUpdate)) {
 			//
 			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
 			//
 			if (!isFile(file)) {
 				//
-				if (Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode())) {
-					//
-					JOptionPane.showMessageDialog(null, "Please select a file");
-					//
-				} // if
-					//
+				testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
+						() -> JOptionPane.showMessageDialog(null, "Please select a file"));
+				//
 				return;
 				//
 			} // if
@@ -269,6 +264,16 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // try
 				//
+		} // if
+			//
+	}
+
+	private static void testAndRun(final boolean condition, final Runnable runnable) {
+		//
+		if (condition && runnable != null) {
+			//
+			runnable.run();
+			//
 		} // if
 			//
 	}

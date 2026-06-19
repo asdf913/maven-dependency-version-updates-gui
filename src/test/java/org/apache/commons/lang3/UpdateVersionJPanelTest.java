@@ -40,7 +40,7 @@ import io.github.toolfactory.narcissus.Narcissus;
 public class UpdateVersionJPanelTest {
 
 	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS, METHOD_TEST_AND_GET_AS_BOOLEAN,
-			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER = null;
+			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -63,6 +63,8 @@ public class UpdateVersionJPanelTest {
 		(METHOD_NEW_DOCUMENT_BUILDER = clz.getDeclaredMethod("newDocumentBuilder", DocumentBuilderFactory.class))
 				.setAccessible(true);
 		//
+		(METHOD_TEST_AND_RUN = clz.getDeclaredMethod("testAndRun", Boolean.TYPE, Runnable.class)).setAccessible(true);
+		//
 	}
 
 	private static class IH implements InvocationHandler {
@@ -72,6 +74,12 @@ public class UpdateVersionJPanelTest {
 		@Override
 		public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 			//
+			if (Objects.equals(method != null ? method.getReturnType() : null, Void.TYPE)) {
+				//
+				return null;
+				//
+			} // if
+				//
 			final String name = getName(method);
 			//
 			if (proxy instanceof Map) {
@@ -500,6 +508,16 @@ public class UpdateVersionJPanelTest {
 	public void testIsFile() throws IllegalAccessException, InvocationTargetException {
 		//
 		Assert.assertEquals(METHOD_IS_FILE != null ? METHOD_IS_FILE.invoke(null, new File(".")) : null, Boolean.FALSE);
+		//
+	}
+
+	@Test
+	public void testTestAndRun() throws IllegalAccessException, InvocationTargetException {
+		//
+		Assert.assertNull(METHOD_TEST_AND_RUN != null ? METHOD_TEST_AND_RUN.invoke(null, Boolean.TRUE, null) : null);
+		//
+		Assert.assertNull(METHOD_TEST_AND_RUN != null ? METHOD_TEST_AND_RUN.invoke(null, Boolean.TRUE,
+				Reflection.newProxy(Runnable.class, ObjectUtils.getIfNull(ih, IH::new))) : null);
 		//
 	}
 
