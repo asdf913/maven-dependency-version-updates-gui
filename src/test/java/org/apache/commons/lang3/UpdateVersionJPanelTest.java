@@ -41,7 +41,7 @@ import io.github.toolfactory.narcissus.Narcissus;
 public class UpdateVersionJPanelTest {
 
 	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS, METHOD_TEST_AND_GET_AS_BOOLEAN,
-			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN = null;
+			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN, METHOD_AND = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -65,6 +65,8 @@ public class UpdateVersionJPanelTest {
 				.setAccessible(true);
 		//
 		(METHOD_TEST_AND_RUN = clz.getDeclaredMethod("testAndRun", Boolean.TYPE, Runnable.class)).setAccessible(true);
+		//
+		(METHOD_AND = clz.getDeclaredMethod("and", Boolean.TYPE, Boolean.TYPE, boolean[].class)).setAccessible(true);
 		//
 	}
 
@@ -229,7 +231,9 @@ public class UpdateVersionJPanelTest {
 		for (int i = 0; ms != null && i < ms.length; i++) {
 			//
 			if ((m = ArrayUtils.get(ms, i)) == null || m.isSynthetic()
-					|| (parameterTypes = m.getParameterTypes()) == null) {
+					|| (parameterTypes = m.getParameterTypes()) == null
+					|| Boolean.logicalAnd(Objects.equals(getName(m), "and"), Arrays.equals(parameterTypes,
+							new Class[] { Boolean.TYPE, Boolean.TYPE, boolean[].class }))) {
 				//
 				continue;
 				//
@@ -318,7 +322,9 @@ public class UpdateVersionJPanelTest {
 					|| Boolean.logicalAnd(Objects.equals(name = getName(m), "toMap"),
 							Arrays.equals(parameterTypes, new Class[] { String[].class }))
 					|| Boolean.logicalAnd(Objects.equals(name, "indexOf"),
-							Arrays.equals(parameterTypes, new Class[] { String.class, String.class, Integer.TYPE }))) {
+							Arrays.equals(parameterTypes, new Class[] { String.class, String.class, Integer.TYPE }))
+					|| Boolean.logicalAnd(Objects.equals(name, "and"), Arrays.equals(parameterTypes,
+							new Class[] { Boolean.TYPE, Boolean.TYPE, boolean[].class }))) {
 				//
 				continue;
 				//
@@ -539,6 +545,24 @@ public class UpdateVersionJPanelTest {
 		//
 		Assert.assertNull(METHOD_TEST_AND_RUN != null ? METHOD_TEST_AND_RUN.invoke(null, Boolean.TRUE,
 				Reflection.newProxy(Runnable.class, ObjectUtils.getIfNull(ih, IH::new))) : null);
+		//
+	}
+
+	@Test
+	public void testAnd() throws IllegalAccessException, InvocationTargetException {
+		//
+		Assert.assertEquals(METHOD_AND != null ? METHOD_AND.invoke(null, Boolean.FALSE, Boolean.TRUE, null) : null,
+				Boolean.FALSE);
+		//
+		Assert.assertEquals(METHOD_AND != null ? METHOD_AND.invoke(null, Boolean.TRUE, Boolean.FALSE, null) : null,
+				Boolean.FALSE);
+		//
+		Assert.assertEquals(METHOD_AND != null ? METHOD_AND.invoke(null, Boolean.TRUE, Boolean.TRUE, null) : null,
+				Boolean.TRUE);
+		//
+		Assert.assertEquals(
+				METHOD_AND != null ? METHOD_AND.invoke(null, Boolean.TRUE, Boolean.TRUE, new boolean[] { true }) : null,
+				Boolean.TRUE);
 		//
 	}
 

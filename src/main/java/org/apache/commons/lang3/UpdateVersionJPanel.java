@@ -240,8 +240,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					final String versionNew = getText(tfVersion);
 					//
-					if (Boolean.logicalAnd(!Objects.equals(versionOld, versionNew), !GraphicsEnvironment.isHeadless())
-							&& !isTestMode()
+					if (and(!Objects.equals(versionOld, versionNew), !GraphicsEnvironment.isHeadless(), !isTestMode())
 							&& JOptionPane.showConfirmDialog(null,
 									String.format("Update version number from \"%1$s\" to \"%2$s\"?", versionOld,
 											versionNew)) == JOptionPane.YES_OPTION) {
@@ -264,6 +263,30 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static boolean and(final boolean a, final boolean b, final boolean... bs) {
+		//
+		boolean result = a && b;
+		//
+		if (!result) {
+			//
+			return result;
+			//
+		} // if
+			//
+		for (int i = 0; bs != null && i < bs.length; i++) {
+			//
+			if (!(result &= bs[i])) {
+				//
+				return result;
+				//
+			} // if
+				//
+		} // for
+			//
+		return result;
+		//
 	}
 
 	private static Node item(final NodeList instance, final int index) {
