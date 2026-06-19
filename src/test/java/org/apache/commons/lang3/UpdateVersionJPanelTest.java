@@ -21,6 +21,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
@@ -39,7 +40,7 @@ import io.github.toolfactory.narcissus.Narcissus;
 public class UpdateVersionJPanelTest {
 
 	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS, METHOD_TEST_AND_GET_AS_BOOLEAN,
-			METHOD_IS_FILE = null;
+			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -58,6 +59,9 @@ public class UpdateVersionJPanelTest {
 				BooleanSupplier.class)).setAccessible(true);
 		//
 		(METHOD_IS_FILE = clz.getDeclaredMethod("isFile", File.class)).setAccessible(true);
+		//
+		(METHOD_NEW_DOCUMENT_BUILDER = clz.getDeclaredMethod("newDocumentBuilder", DocumentBuilderFactory.class))
+				.setAccessible(true);
 		//
 	}
 
@@ -315,6 +319,10 @@ public class UpdateVersionJPanelTest {
 					//
 					add(collection, XPathFactory.newDefaultInstance());
 					//
+				} else if (Objects.equals(parameterType, DocumentBuilder.class)) {
+					//
+					add(collection, newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()));
+					//
 				} else if (Objects.equals(parameterType, Class.class)) {
 					//
 					add(collection, Object.class);
@@ -370,6 +378,21 @@ public class UpdateVersionJPanelTest {
 				//
 		} // for
 			//
+	}
+
+	private static DocumentBuilder newDocumentBuilder(final DocumentBuilderFactory instance) throws Throwable {
+		try {
+			final Object obj = METHOD_NEW_DOCUMENT_BUILDER != null ? METHOD_NEW_DOCUMENT_BUILDER.invoke(null, instance)
+					: null;
+			if (obj == null) {
+				return null;
+			} else if (obj instanceof DocumentBuilder) {
+				return (DocumentBuilder) obj;
+			}
+			throw new Throwable(Objects.toString(getClass(obj)));
+		} catch (final InvocationTargetException e) {
+			throw e.getTargetException();
+		}
 	}
 
 	private static String getName(final Member instance) throws Throwable {

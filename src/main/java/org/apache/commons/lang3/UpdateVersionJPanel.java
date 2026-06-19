@@ -46,6 +46,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -188,13 +189,12 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			try {
 				//
-				final DocumentBuilder db = newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance());
-				//
 				final XPath xp = newXPath(XPathFactory.newDefaultInstance());
 				//
 				final NodeList nodeList = cast(NodeList.class, evaluate(xp,
 						"/*[local-name()=\"project\"]/*[local-name()=\"dependencies\"]/*[local-name()=\"dependency\"]",
-						db != null ? db.parse(file) : null, XPathConstants.NODESET));
+						parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), file),
+						XPathConstants.NODESET));
 				//
 				Dependency dependency = null;
 				//
@@ -271,6 +271,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static Document parse(final DocumentBuilder instance, final File file) throws SAXException, IOException {
+		return instance != null && file != null && file.getPath() != null ? instance.parse(file) : null;
 	}
 
 	private static boolean isFile(final File instance) {
@@ -362,9 +366,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		//
 		try {
 			//
-			final DocumentBuilder db = newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance());
-			//
-			return db != null && file != null && file.getPath() != null && db.parse(file) != null;
+			return parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), file) != null;
 			//
 		} catch (final ParserConfigurationException | SAXException | IOException e) {
 			//
