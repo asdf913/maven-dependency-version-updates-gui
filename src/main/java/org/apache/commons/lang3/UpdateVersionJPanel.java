@@ -213,7 +213,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 						filter(stream(dependencies), x -> x != null && Objects.equals(x.groupId, getText(tfGroupId))
 								&& Objects.equals(x.artifactId, getText(tfArtifactId)))))) {
 					//
-					if (!GraphicsEnvironment.isHeadless() && !isTestMode()) {
+					if (Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode())) {
 						//
 						JOptionPane.showMessageDialog(null, "No dependency found");
 						//
