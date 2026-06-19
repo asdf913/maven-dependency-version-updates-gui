@@ -5,6 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.nio.file.Files;
@@ -59,9 +63,21 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	}
 
-	private JTextComponent tfFile, tfGroupId, tfArtifactId, tfVersion = null;
+	@Target(ElementType.FIELD)
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface Note {
+		String value();
+	}
 
-	private AbstractButton btnFile, btnUpdate = null;
+	@Note("File")
+	private JTextComponent tfFile = null;
+
+	private JTextComponent tfGroupId, tfArtifactId, tfVersion = null;
+
+	@Note("File")
+	private AbstractButton btnFile = null;
+
+	private AbstractButton btnUpdate = null;
 
 	private UpdateVersionJPanel() {
 		//
