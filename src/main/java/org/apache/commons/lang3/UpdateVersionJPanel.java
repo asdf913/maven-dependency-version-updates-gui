@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.function.FailableFunction;
+import org.apache.commons.lang3.function.FailableRunnable;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -240,21 +241,22 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					final String versionNew = getText(tfVersion);
 					//
-					if (testAndGetAsBoolean(
+					testAndRun(testAndGetAsBoolean(
 							and(!Objects.equals(versionOld, versionNew), !GraphicsEnvironment.isHeadless(),
 									!isTestMode()),
 							() -> JOptionPane.showConfirmDialog(null,
 									String.format("Update version number from \"%1$s\" to \"%2$s\"?", versionOld,
-											versionNew)) == JOptionPane.YES_OPTION)) {
-						//
-						final StringBuilder sb = new StringBuilder(ObjectUtils.getIfNull(string, ""));
-						//
-						sb.delete(index3, index4);
-						//
-						Files.writeString(path, sb.insert(index3, versionNew));
-						//
-					} // if
-						//
+											versionNew)) == JOptionPane.YES_OPTION),
+							() -> {
+								//
+								final StringBuilder sb = new StringBuilder(ObjectUtils.getIfNull(string, ""));
+								//
+								sb.delete(index3, index4);
+								//
+								Files.writeString(path, sb.insert(index3, versionNew));
+								//
+							});
+					//
 				} // if
 					//
 			} catch (final ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
@@ -265,6 +267,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+
 	}
 
 	private static boolean and(final boolean a, final boolean b, final boolean... bs) {
@@ -299,7 +302,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		return instance != null ? instance.getLength() : 0;
 	}
 
-	private static void testAndRun(final boolean condition, final Runnable runnable) {
+	private static <E extends Throwable> void testAndRun(final boolean condition, final FailableRunnable<E> runnable)
+			throws E {
 		//
 		if (condition && runnable != null) {
 			//

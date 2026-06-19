@@ -27,6 +27,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.function.FailableFunction;
+import org.apache.commons.lang3.function.FailableRunnable;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -64,7 +65,8 @@ public class UpdateVersionJPanelTest {
 		(METHOD_NEW_DOCUMENT_BUILDER = clz.getDeclaredMethod("newDocumentBuilder", DocumentBuilderFactory.class))
 				.setAccessible(true);
 		//
-		(METHOD_TEST_AND_RUN = clz.getDeclaredMethod("testAndRun", Boolean.TYPE, Runnable.class)).setAccessible(true);
+		(METHOD_TEST_AND_RUN = clz.getDeclaredMethod("testAndRun", Boolean.TYPE, FailableRunnable.class))
+				.setAccessible(true);
 		//
 		(METHOD_AND = clz.getDeclaredMethod("and", Boolean.TYPE, Boolean.TYPE, boolean[].class)).setAccessible(true);
 		//
@@ -543,8 +545,11 @@ public class UpdateVersionJPanelTest {
 		//
 		Assert.assertNull(METHOD_TEST_AND_RUN != null ? METHOD_TEST_AND_RUN.invoke(null, Boolean.TRUE, null) : null);
 		//
-		Assert.assertNull(METHOD_TEST_AND_RUN != null ? METHOD_TEST_AND_RUN.invoke(null, Boolean.TRUE,
-				Reflection.newProxy(Runnable.class, ObjectUtils.getIfNull(ih, IH::new))) : null);
+		Assert.assertNull(
+				METHOD_TEST_AND_RUN != null
+						? METHOD_TEST_AND_RUN.invoke(null, Boolean.TRUE,
+								Reflection.newProxy(FailableRunnable.class, ObjectUtils.getIfNull(ih, IH::new)))
+						: null);
 		//
 	}
 
