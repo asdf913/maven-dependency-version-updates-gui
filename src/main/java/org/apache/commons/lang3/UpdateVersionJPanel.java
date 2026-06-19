@@ -76,7 +76,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 	@Note("File")
 	private JTextComponent tfFile = null;
 
-	private JTextComponent tfGroupId, tfArtifactId, tfVersion = null;
+	@Note("Group ID")
+	private JTextComponent tfGroupId = null;
+
+	private JTextComponent tfArtifactId, tfVersion = null;
 
 	@Note("File")
 	private AbstractButton btnFile = null;
