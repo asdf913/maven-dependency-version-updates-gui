@@ -123,7 +123,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private transient Collection<Dependency> dependencies = null;
 
-	private String groupId, artifactId = null;
+	@Note("Group ID")
+	private String groupId = null;
+
+	private String artifactId = null;
 
 	private UpdateVersionJPanel() {
 		//
