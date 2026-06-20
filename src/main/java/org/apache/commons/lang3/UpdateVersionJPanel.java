@@ -302,7 +302,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 	}
 
-	private static <E> void pack(final Window instance) {
+	private static void pack(final Window instance) {
 		//
 		if (instance == null) {
 			//
