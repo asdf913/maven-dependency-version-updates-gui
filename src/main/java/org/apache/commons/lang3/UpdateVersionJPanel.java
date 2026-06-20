@@ -262,9 +262,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				Collection<Dependency> ds = getDependencies(file);
 				//
-				if (IterableUtils.isEmpty(ds = toList(
-						filter(stream(ds), x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))
-								&& Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId)))))) {
+				if (IterableUtils.isEmpty(ds = toList(filter(stream(ds),
+						x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
+								Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 							() -> JOptionPane.showMessageDialog(null, "No dependency found"));
