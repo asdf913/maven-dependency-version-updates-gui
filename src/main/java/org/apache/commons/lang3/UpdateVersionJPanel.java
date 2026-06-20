@@ -251,6 +251,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 			} // for
 				//
+			return;
+			//
 		} else if (Objects.equals(source, jcbGroupId)) {
 			//
 			removeAllElements(dcbmArtifactId);
@@ -260,9 +262,25 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))),
 					x -> Dependency.getArtifactId(x)))), x -> addElement(dcbmArtifactId, x));
 			//
-		} else if (Objects.equals(source, btnUpdate)) {
+			return;
 			//
-			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
+		} // if
+			//
+		actionPerformed(this, source);
+		//
+	}
+
+	private static void actionPerformed(final UpdateVersionJPanel instance, final Object source) {
+		//
+		if (instance == null) {
+			//
+			return;
+			//
+		} // if
+			//
+		if (Objects.equals(source, instance.btnUpdate)) {
+			//
+			final File file = testAndApply(Objects::nonNull, getText(instance.tfFile), File::new, null);
 			//
 			if (!isFile(file)) {
 				//
@@ -277,9 +295,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				Collection<Dependency> ds = getDependencies(file);
 				//
-				if (IterableUtils.isEmpty(ds = toList(filter(stream(ds),
-						x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
-								Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))))) {
+				if (IterableUtils.isEmpty(ds = toList(filter(stream(ds), x -> Boolean.logicalAnd(
+						Objects.equals(Dependency.getGroupId(x), getSelectedItem(instance.dcbmGroupId)),
+						Objects.equals(Dependency.getArtifactId(x), getSelectedItem(instance.dcbmArtifactId))))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 							() -> JOptionPane.showMessageDialog(null, "No dependency found"));
@@ -295,10 +313,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					final String string = Files.readString(path);
 					//
 					final int index1 = indexOf(string,
-							String.format("<%1$s>%2$s</%1$s>", GROUP_ID, getSelectedItem(dcbmGroupId)));
+							String.format("<%1$s>%2$s</%1$s>", GROUP_ID, getSelectedItem(instance.dcbmGroupId)));
 					//
 					final int index2 = indexOf(string,
-							String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID, getSelectedItem(dcbmArtifactId)));
+							String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID, getSelectedItem(instance.dcbmArtifactId)));
 					//
 					final int index3 = indexOf(string, "<version>", Math.max(index1, index2)) + 9;
 					//
@@ -306,7 +324,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					final String versionOld = StringUtils.substring(string, index3, index4);
 					//
-					final String versionNew = getText(tfVersion);
+					final String versionNew = getText(instance.tfVersion);
 					//
 					testAndRun(testAndGetAsBoolean(
 							and(!Objects.equals(versionOld, versionNew), !GraphicsEnvironment.isHeadless(),
