@@ -1,6 +1,7 @@
 package org.apache.commons.lang3;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -210,12 +211,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							map(stream(dependencies = getDependencies(file)), x -> x != null ? x.groupId : null))),
 							x -> addElement(dcbmGroupId, x));
 					//
-					if (jFrame != null) {
-						//
-						jFrame.pack();
-						//
-					} // if
-						//
+					pack(jFrame);
+					//
 				} catch (final ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
 					//
 					throw new RuntimeException(e);
@@ -309,6 +306,27 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // try
 				//
+		} // if
+			//
+	}
+
+	private static <E> void pack(final Window instance) {
+		//
+		if (instance == null) {
+			//
+			return;
+			//
+		} // if
+			//
+		final Field objectLock = testAndApply(x -> IterableUtils.size(x) == 1,
+				toList(filter(stream(FieldUtils.getAllFieldsList(getClass(instance))),
+						f -> Objects.equals(getName(f), "objectLock"))),
+				x -> IterableUtils.get(x, 0), null);
+		//
+		if (objectLock == null || Narcissus.getField(instance, objectLock) != null) {
+			//
+			instance.pack();
+			//
 		} // if
 			//
 	}
@@ -559,7 +577,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			instance.jFrame.add(instance);
 			//
-			instance.jFrame.pack();
+			pack(instance.jFrame);
 			//
 			if (!isTestMode()) {
 				//
