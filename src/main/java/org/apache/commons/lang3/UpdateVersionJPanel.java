@@ -99,7 +99,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private JFrame jFrame = null;
 
-	private Collection<Dependency> dependencies = null;
+	private transient Collection<Dependency> dependencies = null;
 
 	private UpdateVersionJPanel() {
 		//
