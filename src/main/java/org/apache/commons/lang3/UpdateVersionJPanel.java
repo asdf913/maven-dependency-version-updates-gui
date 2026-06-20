@@ -84,9 +84,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 	@Note("File")
 	private JTextComponent tfFile = null;
 
-	@Note("ArtifactId ID")
-	private JTextComponent tfArtifactId = null;
-
 	private JTextComponent tfVersion = null;
 
 	@Note("File")
@@ -94,9 +91,13 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private AbstractButton btnUpdate = null;
 
-	private DefaultComboBoxModel<String> dcbmGroupId = null;
+	private JComboBox<String> jcbGroupId = null;
+
+	private DefaultComboBoxModel<String> dcbmGroupId, dcbmArtifactId = null;
 
 	private JFrame jFrame = null;
+
+	private Collection<Dependency> dependencies = null;
 
 	private UpdateVersionJPanel() {
 		//
@@ -134,11 +135,13 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		//
 		add(new JLabel("Group ID"));
 		//
-		add(new JComboBox<>(dcbmGroupId = new DefaultComboBoxModel<>()), String.join(",", growx, wrap));
+		add(jcbGroupId = new JComboBox<>(dcbmGroupId = new DefaultComboBoxModel<>()), String.join(",", growx, wrap));
+		//
+		jcbGroupId.addActionListener(this);
 		//
 		add(new JLabel("Artifact ID"));
 		//
-		add(tfArtifactId = new JTextField(), String.join(",", growx, wrap));
+		add(new JComboBox<>(dcbmArtifactId = new DefaultComboBoxModel<>()), String.join(",", growx, wrap));
 		//
 		add(new JLabel("Version"));
 		//
@@ -201,7 +204,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 				try {
 					//
-					forEach(sorted(distinct(map(stream(getDependencies(file)), x -> x != null ? x.groupId : null))),
+					forEach(sorted(distinct(
+							map(stream(dependencies = getDependencies(file)), x -> x != null ? x.groupId : null))),
 							x -> {
 								//
 								if (x == null || dcbmGroupId == null) {
@@ -228,6 +232,30 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 			} // if
 				//
+		} else if (Objects.equals(source, jcbGroupId)) {
+			//
+			if (dcbmArtifactId != null) {
+				//
+				dcbmArtifactId.removeAllElements();
+				//
+			} // for
+				//
+			forEach(sorted(distinct(map(
+					filter(stream(dependencies),
+							x -> x != null && Objects.equals(x.groupId,
+									dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null)),
+					x -> x != null ? x.artifactId : null))), x -> {
+						//
+						if (x == null || dcbmArtifactId == null) {
+							//
+							return;
+							//
+						} // if
+							//
+						dcbmArtifactId.addElement(x);
+						//
+					});
+			//
 		} else if (Objects.equals(source, btnUpdate)) {
 			//
 			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
@@ -245,15 +273,11 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				Collection<Dependency> dependencies = getDependencies(file);
 				//
-				if (IterableUtils
-						.isEmpty(
-								dependencies = toList(
-										filter(stream(dependencies),
-												x -> x != null
-														&& Objects.equals(x.groupId,
-																dcbmGroupId != null ? dcbmGroupId.getSelectedItem()
-																		: null)
-														&& Objects.equals(x.artifactId, getText(tfArtifactId)))))) {
+				if (IterableUtils.isEmpty(dependencies = toList(filter(stream(dependencies),
+						x -> x != null
+								&& Objects.equals(x.groupId, dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null)
+								&& Objects.equals(x.artifactId,
+										dcbmArtifactId != null ? dcbmArtifactId.getSelectedItem() : null))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 							() -> JOptionPane.showMessageDialog(null, "No dependency found"));
@@ -271,8 +295,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					final int index1 = indexOf(string, String.format("<%1$s>%2$s</%1$s>", GROUP_ID,
 							dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null));
 					//
-					final int index2 = indexOf(string,
-							String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID, getText(tfArtifactId)));
+					final int index2 = indexOf(string, String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID,
+							dcbmArtifactId != null ? dcbmArtifactId.getSelectedItem() : null));
 					//
 					final int index3 = indexOf(string, "<version>", Math.max(index1, index2)) + 9;
 					//
@@ -530,12 +554,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // if
 				//
-		} // if
-			//
-		if (containsKey(map, ARTIFACT_ID)) {
-			//
-			setText(instance.tfArtifactId, get(map, ARTIFACT_ID));
-			//
 		} // if
 			//
 		if (containsKey(map, "version")) {

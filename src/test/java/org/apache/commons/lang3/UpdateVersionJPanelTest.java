@@ -11,6 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 import javax.xml.parsers.DocumentBuilder;
@@ -486,6 +488,8 @@ public class UpdateVersionJPanelTest {
 			//
 		} // if
 			//
+		instance.actionPerformed(new ActionEvent("", 0, null));
+		//
 		final AbstractButton btnUpdate = new JButton();
 		//
 		FieldUtils.writeDeclaredField(instance, "btnUpdate", btnUpdate, true);
@@ -500,9 +504,17 @@ public class UpdateVersionJPanelTest {
 		//
 		FieldUtils.writeDeclaredField(instance, "dcbmGroupId", new DefaultComboBoxModel<>(), true);
 		//
-		FieldUtils.writeDeclaredField(instance, "tfArtifactId", new JTextField("commons-lang3"), true);
+		FieldUtils.writeDeclaredField(instance, "dcbmArtifactId", new DefaultComboBoxModel<>(), true);
 		//
 		instance.actionPerformed(actionEvent);
+		//
+		final JComboBox<?> jcbGroupId = new JComboBox<>();
+		//
+		FieldUtils.writeDeclaredField(instance, "jcbGroupId", jcbGroupId, true);
+		//
+		FieldUtils.writeDeclaredField(instance, "dependencies", Collections.singleton(null), true);
+		//
+		instance.actionPerformed(new ActionEvent(jcbGroupId, 0, null));
 		//
 	}
 
