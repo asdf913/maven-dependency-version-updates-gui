@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.MutableComboBoxModel;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 import javax.xml.namespace.QName;
@@ -209,13 +210,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							map(stream(dependencies = getDependencies(file)), x -> x != null ? x.groupId : null))),
 							x -> {
 								//
-								if (x == null || dcbmGroupId == null) {
-									//
-									return;
-									//
-								} // if
-									//
-								dcbmGroupId.addElement(x);
+								addElement(dcbmGroupId, x);
 								//
 							});
 					//
@@ -246,13 +241,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))),
 					x -> x != null ? x.artifactId : null))), x -> {
 						//
-						if (x == null || dcbmArtifactId == null) {
-							//
-							return;
-							//
-						} // if
-							//
-						dcbmArtifactId.addElement(x);
+						addElement(dcbmArtifactId, x);
 						//
 					});
 			//
@@ -330,6 +319,12 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static <E> void addElement(final MutableComboBoxModel<E> instance, final E item) {
+		if (instance != null) {
+			instance.addElement(item);
+		}
 	}
 
 	private static Object getSelectedItem(final ComboBoxModel<?> instance) {
