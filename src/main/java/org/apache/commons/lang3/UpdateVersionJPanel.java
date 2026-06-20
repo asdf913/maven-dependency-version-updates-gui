@@ -38,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.MutableComboBoxModel;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
@@ -237,11 +238,11 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // if
 				//
-			for (int i = 0; dcbmGroupId != null && i < dcbmGroupId.getSize(); i++) {
+			for (int i = 0; i < getSize(dcbmGroupId); i++) {
 				//
-				if (Objects.equals(groupId, dcbmGroupId.getElementAt(i))) {
+				if (Objects.equals(groupId, getElementAt(dcbmGroupId, i))) {
 					//
-					dcbmGroupId.setSelectedItem(groupId);
+					setSelectedItem(dcbmGroupId, groupId);
 					//
 					groupId = null;
 					//
@@ -268,6 +269,20 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		actionPerformed(this, source);
 		//
+	}
+
+	private static void setSelectedItem(final ComboBoxModel<?> instance, final Object item) {
+		if (instance != null) {
+			instance.setSelectedItem(item);
+		}
+	}
+
+	private static <E> E getElementAt(final ListModel<E> instance, final int index) {
+		return instance != null ? instance.getElementAt(index) : null;
+	}
+
+	private static int getSize(final ListModel<?> instance) {
+		return instance != null ? instance.getSize() : 0;
 	}
 
 	private static void actionPerformed(final UpdateVersionJPanel instance, final Object source) {

@@ -24,6 +24,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.text.JTextComponent;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -85,7 +86,7 @@ public class UpdateVersionJPanelTest {
 
 		private Boolean test, containsKey, add, getAsBoolean;
 
-		private Integer length;
+		private Integer length, size;
 
 		@Override
 		public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -98,6 +99,20 @@ public class UpdateVersionJPanelTest {
 				//
 			final String name = getName(method);
 			//
+			if (proxy instanceof ListModel) {
+				//
+				if (Objects.equals(name, "getSize")) {
+					//
+					return size;
+					//
+				} else if (Objects.equals(name, "getElementAt")) {
+					//
+					return null;
+					//
+				} // if
+					//
+			} // if
+				//
 			if (proxy instanceof Map) {
 				//
 				if (contains(Arrays.asList("put", "get"), name)) {
@@ -326,7 +341,7 @@ public class UpdateVersionJPanelTest {
 			//
 			ih.test = ih.containsKey = ih.add = Boolean.FALSE;
 			//
-			ih.length = Integer.valueOf(0);
+			ih.length = ih.size = Integer.valueOf(0);
 			//
 		} // if
 			//
