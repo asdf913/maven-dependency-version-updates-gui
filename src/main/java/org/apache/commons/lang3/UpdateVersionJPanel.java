@@ -84,6 +84,14 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			return instance != null ? instance.getGroupId() : null;
 		}
 
+		private String getArtifactId() {
+			return artifactId;
+		}
+
+		private static String getArtifactId(final Dependency instance) {
+			return instance != null ? instance.getArtifactId() : null;
+		}
+
 	}
 
 	@Target(ElementType.FIELD)
@@ -235,7 +243,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			forEach(sorted(distinct(map(
 					filter(stream(dependencies),
 							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))),
-					x -> x != null ? x.artifactId : null))), x -> addElement(dcbmArtifactId, x));
+					x -> Dependency.getArtifactId(x)))), x -> addElement(dcbmArtifactId, x));
 			//
 		} else if (Objects.equals(source, btnUpdate)) {
 			//
@@ -254,9 +262,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				Collection<Dependency> ds = getDependencies(file);
 				//
-				if (IterableUtils.isEmpty(ds = toList(filter(stream(ds),
-						x -> x != null && Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))
-								&& Objects.equals(x.artifactId, getSelectedItem(dcbmArtifactId)))))) {
+				if (IterableUtils.isEmpty(ds = toList(
+						filter(stream(ds), x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))
+								&& Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId)))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 							() -> JOptionPane.showMessageDialog(null, "No dependency found"));

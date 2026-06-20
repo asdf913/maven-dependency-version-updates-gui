@@ -593,4 +593,58 @@ public class UpdateVersionJPanelTest {
 		//
 	}
 
+	@Test
+	public void testDependency() throws Throwable {
+		//
+		final Class<?> clz = Class.forName("org.apache.commons.lang3.UpdateVersionJPanel$Dependency");
+		//
+		final Method[] ms = clz != null ? clz.getDeclaredMethods() : null;
+		//
+		Method m = null;
+		//
+		Object[] os = null;
+		//
+		Object dependency = null;
+		//
+		Class<?>[] parameterTypes = null;
+		//
+		Collection<Object> collection = null;
+		//
+		for (int i = 0; ms != null && i < ms.length; i++) {
+			//
+			if ((m = ArrayUtils.get(ms, i)) == null || m.isSynthetic()
+					|| (parameterTypes = m.getParameterTypes()) == null) {
+				//
+				continue;
+				//
+			} // if
+				//
+			os = toArray(Collections.nCopies(m.getParameterCount(), null));
+			//
+			Assert.assertNull(Modifier.isStatic(m.getModifiers()) ? Narcissus.invokeStaticMethod(m, os)
+					: Narcissus.invokeMethod(
+							dependency = ObjectUtils.getIfNull(dependency, () -> Narcissus.allocateInstance(clz)), m,
+							os),
+					Objects.toString(m));
+			//
+			clear(collection = ObjectUtils.getIfNull(collection, ArrayList::new));
+			//
+			for (int j = 0; j < parameterTypes.length; j++) {
+				//
+				add(collection, Narcissus.allocateInstance(ArrayUtils.get(parameterTypes, j)));
+				//
+			} // for
+				//
+			os = toArray(collection);
+			//
+			Assert.assertNull(Modifier.isStatic(m.getModifiers()) ? Narcissus.invokeStaticMethod(m, os)
+					: Narcissus.invokeMethod(
+							dependency = ObjectUtils.getIfNull(dependency, () -> Narcissus.allocateInstance(clz)), m,
+							os),
+					Objects.toString(m));
+			//
+		} // for
+			//
+	}
+
 }
