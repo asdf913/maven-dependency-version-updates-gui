@@ -617,9 +617,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
-		if (containsKey(map, "groupId")) {
+		if (containsKey(map, GROUP_ID)) {
 			//
-			instance.groupId = get(map, "groupId");
+			instance.groupId = get(map, GROUP_ID);
 			//
 		} // if
 			//
