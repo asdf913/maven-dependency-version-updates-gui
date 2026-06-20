@@ -96,7 +96,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private JComboBox<String> jcbGroupId = null;
 
-	private DefaultComboBoxModel<String> dcbmGroupId, dcbmArtifactId = null;
+	@Note("Group ID")
+	private DefaultComboBoxModel<String> dcbmGroupId = null;
+
+	private DefaultComboBoxModel<String> dcbmArtifactId = null;
 
 	private JFrame jFrame = null;
 
