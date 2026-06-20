@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.swing.AbstractButton;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
@@ -123,11 +124,11 @@ public class UpdateVersionJPanelTest {
 					//
 			} else if (proxy instanceof Stream) {
 				//
-				if (Objects.equals(name, "toList")) {
+				if (contains(Arrays.asList("toList", "map"), name)) {
 					//
 					return null;
 					//
-				} else if (Objects.equals(name, "filter")) {
+				} else if (contains(Arrays.asList("filter", "distinct", "sorted"), name)) {
 					//
 					return proxy;
 					//
@@ -394,6 +395,10 @@ public class UpdateVersionJPanelTest {
 			if (contains(Arrays.asList(Integer.TYPE, Boolean.TYPE), getReturnType(m))
 					|| Boolean.logicalAnd(Objects.equals(name, "filter"),
 							Arrays.equals(parameterTypes, new Class<?>[] { Stream.class, Predicate.class }))
+					|| Boolean.logicalAnd(Objects.equals(name, "distinct"),
+							Arrays.equals(parameterTypes, new Class<?>[] { Stream.class }))
+					|| Boolean.logicalAnd(Objects.equals(name, "sorted"),
+							Arrays.equals(parameterTypes, new Class<?>[] { Stream.class }))
 					|| Boolean.logicalAnd(Objects.equals(name, "cast"),
 							Arrays.equals(parameterTypes, new Class<?>[] { Class.class, Object.class }))
 					|| Boolean.logicalAnd(Objects.equals(name, "newDocumentBuilder"),
@@ -493,7 +498,7 @@ public class UpdateVersionJPanelTest {
 		//
 		instance.actionPerformed(actionEvent);
 		//
-		FieldUtils.writeDeclaredField(instance, "tfGroupId", new JTextField("org.apache.commons"), true);
+		FieldUtils.writeDeclaredField(instance, "dcbmGroupId", new DefaultComboBoxModel<>(), true);
 		//
 		FieldUtils.writeDeclaredField(instance, "tfArtifactId", new JTextField("commons-lang3"), true);
 		//

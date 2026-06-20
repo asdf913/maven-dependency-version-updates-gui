@@ -21,11 +21,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.swing.AbstractButton;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -80,9 +84,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 	@Note("File")
 	private JTextComponent tfFile = null;
 
-	@Note("Group ID")
-	private JTextComponent tfGroupId = null;
-
 	@Note("ArtifactId ID")
 	private JTextComponent tfArtifactId = null;
 
@@ -92,6 +93,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 	private AbstractButton btnFile = null;
 
 	private AbstractButton btnUpdate = null;
+
+	private DefaultComboBoxModel<String> dcbmGroupId = null;
+
+	private JFrame jFrame = null;
 
 	private UpdateVersionJPanel() {
 		//
@@ -129,7 +134,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		//
 		add(new JLabel("Group ID"));
 		//
-		add(tfGroupId = new JTextField(), String.join(",", growx, wrap));
+		add(new JComboBox<>(dcbmGroupId = new DefaultComboBoxModel<>()), String.join(",", growx, wrap));
 		//
 		add(new JLabel("Artifact ID"));
 		//
@@ -184,6 +189,45 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					() -> setText(tfFile, testAndApply(UpdateVersionJPanel::isXml, jfc.getSelectedFile(),
 							UpdateVersionJPanel::getAbsolutePath, null)));
 			//
+			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
+			//
+			if (isFile(file)) {
+				//
+				if (dcbmGroupId != null) {
+					//
+					dcbmGroupId.removeAllElements();
+					//
+				} // for
+					//
+				try {
+					//
+					forEach(sorted(distinct(map(stream(getDependencies(file)), x -> x != null ? x.groupId : null))),
+							x -> {
+								//
+								if (x == null || dcbmGroupId == null) {
+									//
+									return;
+									//
+								} // if
+									//
+								dcbmGroupId.addElement(x);
+								//
+							});
+					//
+					if (jFrame != null) {
+						//
+						jFrame.pack();
+						//
+					} // if
+						//
+				} catch (final ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+					//
+					throw new RuntimeException(e);
+					//
+				} // try
+					//
+			} // if
+				//
 		} else if (Objects.equals(source, btnUpdate)) {
 			//
 			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
@@ -199,34 +243,17 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			try {
 				//
-				final XPath xp = newXPath(XPathFactory.newDefaultInstance());
+				Collection<Dependency> dependencies = getDependencies(file);
 				//
-				final NodeList nodeList = cast(NodeList.class, evaluate(xp,
-						"/*[local-name()=\"project\"]/*[local-name()=\"dependencies\"]/*[local-name()=\"dependency\"]",
-						parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), file),
-						XPathConstants.NODESET));
-				//
-				Dependency dependency = null;
-				//
-				Node node = null;
-				//
-				Collection<Dependency> dependencies = null;
-				//
-				for (int i = 0; i < getLength(nodeList); i++) {
-					//
-					(dependency = new Dependency()).groupId = Objects.toString(evaluate(xp,
-							"*[local-name()=\"groupId\"]", node = item(nodeList, i), XPathConstants.STRING));
-					//
-					dependency.artifactId = Objects
-							.toString(evaluate(xp, "*[local-name()=\"artifactId\"]", node, XPathConstants.STRING));
-					//
-					add(dependencies = ObjectUtils.getIfNull(dependencies, ArrayList::new), dependency);
-					//
-				} // for
-					//
-				if (IterableUtils.isEmpty(dependencies = toList(
-						filter(stream(dependencies), x -> x != null && Objects.equals(x.groupId, getText(tfGroupId))
-								&& Objects.equals(x.artifactId, getText(tfArtifactId)))))) {
+				if (IterableUtils
+						.isEmpty(
+								dependencies = toList(
+										filter(stream(dependencies),
+												x -> x != null
+														&& Objects.equals(x.groupId,
+																dcbmGroupId != null ? dcbmGroupId.getSelectedItem()
+																		: null)
+														&& Objects.equals(x.artifactId, getText(tfArtifactId)))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 							() -> JOptionPane.showMessageDialog(null, "No dependency found"));
@@ -241,8 +268,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					final String string = Files.readString(path);
 					//
-					final int index1 = indexOf(string,
-							String.format("<%1$s>%2$s</%1$s>", GROUP_ID, getText(tfGroupId)));
+					final int index1 = indexOf(string, String.format("<%1$s>%2$s</%1$s>", GROUP_ID,
+							dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null));
 					//
 					final int index2 = indexOf(string,
 							String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID, getText(tfArtifactId)));
@@ -281,7 +308,55 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
 
+	private static <T> void forEach(final Stream<T> instance, final Consumer<? super T> action) {
+		if (instance != null) {
+			instance.forEach(action);
+		}
+	}
+
+	private static <T> Stream<T> sorted(final Stream<T> instance) {
+		return instance != null ? instance.sorted() : instance;
+	}
+
+	private static <T> Stream<T> distinct(final Stream<T> instance) {
+		return instance != null ? instance.distinct() : instance;
+	}
+
+	private static <T, R> Stream<R> map(final Stream<T> instance, final Function<? super T, ? extends R> mapper) {
+		return instance != null ? instance.map(mapper) : null;
+	}
+
+	private static Collection<Dependency> getDependencies(final File file)
+			throws XPathExpressionException, SAXException, IOException, ParserConfigurationException {
+		//
+		final XPath xp = newXPath(XPathFactory.newDefaultInstance());
+		//
+		final NodeList nodeList = cast(NodeList.class, evaluate(xp,
+				"/*[local-name()=\"project\"]/*[local-name()=\"dependencies\"]/*[local-name()=\"dependency\"]",
+				parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), file), XPathConstants.NODESET));
+		//
+		Dependency dependency = null;
+		//
+		Node node = null;
+		//
+		Collection<Dependency> dependencies = null;
+		//
+		for (int i = 0; i < getLength(nodeList); i++) {
+			//
+			(dependency = new Dependency()).groupId = Objects.toString(
+					evaluate(xp, "*[local-name()=\"groupId\"]", node = item(nodeList, i), XPathConstants.STRING));
+			//
+			dependency.artifactId = Objects
+					.toString(evaluate(xp, "*[local-name()=\"artifactId\"]", node, XPathConstants.STRING));
+			//
+			add(dependencies = ObjectUtils.getIfNull(dependencies, ArrayList::new), dependency);
+			//
+		} // for
+			//
+		return dependencies;
+		//
 	}
 
 	private static boolean and(final boolean a, final boolean b, final boolean... bs) {
@@ -371,7 +446,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static Object evaluate(final XPath instance, final String expression, final Object item,
 			final QName returnType) throws XPathExpressionException {
-		return instance != null ? instance.evaluate(expression, item, returnType) : null;
+		return instance != null && item != null ? instance.evaluate(expression, item, returnType) : null;
 	}
 
 	private static XPath newXPath(final XPathFactory instance) {
@@ -457,12 +532,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
-		if (containsKey(map, GROUP_ID)) {
-			//
-			setText(instance.tfGroupId, get(map, GROUP_ID));
-			//
-		} // if
-			//
 		if (containsKey(map, ARTIFACT_ID)) {
 			//
 			setText(instance.tfArtifactId, get(map, ARTIFACT_ID));
@@ -475,19 +544,19 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} // if
 			//
-		final JFrame jFrame = !GraphicsEnvironment.isHeadless() ? new JFrame() : null;
+		instance.jFrame = !GraphicsEnvironment.isHeadless() ? new JFrame() : null;
 		//
-		if (jFrame != null) {
+		if (instance.jFrame != null) {
 			//
-			jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			instance.jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			//
-			jFrame.add(instance);
+			instance.jFrame.add(instance);
 			//
-			jFrame.pack();
+			instance.jFrame.pack();
 			//
 			if (!isTestMode()) {
 				//
-				jFrame.setVisible(true);
+				instance.jFrame.setVisible(true);
 				//
 			} // if
 				//
