@@ -123,7 +123,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private transient Collection<Dependency> dependencies = null;
 
-	private String groupId = null;
+	private String groupId, artifactId = null;
 
 	private UpdateVersionJPanel() {
 		//
@@ -263,6 +263,20 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))),
 					x -> Dependency.getArtifactId(x)))), x -> addElement(dcbmArtifactId, x));
 			//
+			for (int i = 0; i < getSize(dcbmArtifactId); i++) {
+				//
+				if (Objects.equals(artifactId, getElementAt(dcbmArtifactId, i))) {
+					//
+					setSelectedItem(dcbmArtifactId, artifactId);
+					//
+					groupId = null;
+					//
+					break;
+					//
+				} // if
+					//
+			} // for
+				//
 			return;
 			//
 		} // if
@@ -653,6 +667,12 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		if (containsKey(map, GROUP_ID)) {
 			//
 			instance.groupId = get(map, GROUP_ID);
+			//
+		} // if
+			//
+		if (containsKey(map, ARTIFACT_ID)) {
+			//
+			instance.artifactId = get(map, ARTIFACT_ID);
 			//
 		} // if
 			//
