@@ -122,6 +122,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private transient Collection<Dependency> dependencies = null;
 
+	private String groupId = null;
+
 	private UpdateVersionJPanel() {
 		//
 		init();
@@ -234,6 +236,20 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				throw e instanceof RuntimeException re ? re : new RuntimeException(e);
 				//
 			} // if
+				//
+			for (int i = 0; dcbmGroupId != null && i < dcbmGroupId.getSize(); i++) {
+				//
+				if (Objects.equals(groupId, dcbmGroupId.getElementAt(i))) {
+					//
+					dcbmGroupId.setSelectedItem(groupId);
+					//
+					groupId = null;
+					//
+					break;
+					//
+				} // if
+					//
+			} // for
 				//
 		} else if (Objects.equals(source, jcbGroupId)) {
 			//
@@ -599,6 +615,12 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // if
 				//
+		} // if
+			//
+		if (containsKey(map, "groupId")) {
+			//
+			instance.groupId = get(map, "groupId");
+			//
 		} // if
 			//
 		if (containsKey(map, "version")) {
