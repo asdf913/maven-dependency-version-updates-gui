@@ -208,11 +208,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					forEach(sorted(distinct(
 							map(stream(dependencies = getDependencies(file)), x -> x != null ? x.groupId : null))),
-							x -> {
-								//
-								addElement(dcbmGroupId, x);
-								//
-							});
+							x -> addElement(dcbmGroupId, x));
 					//
 					if (jFrame != null) {
 						//
@@ -239,11 +235,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			forEach(sorted(distinct(map(
 					filter(stream(dependencies),
 							x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))),
-					x -> x != null ? x.artifactId : null))), x -> {
-						//
-						addElement(dcbmArtifactId, x);
-						//
-					});
+					x -> x != null ? x.artifactId : null))), x -> addElement(dcbmArtifactId, x));
 			//
 		} else if (Objects.equals(source, btnUpdate)) {
 			//
@@ -262,8 +254,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				Collection<Dependency> ds = getDependencies(file);
 				//
-				if (IterableUtils.isEmpty(ds = toList(filter(stream(ds),
-						x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))
+				if (IterableUtils.isEmpty(ds = toList(
+						filter(stream(ds), x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))
 								&& Objects.equals(x.artifactId, getSelectedItem(dcbmArtifactId)))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
