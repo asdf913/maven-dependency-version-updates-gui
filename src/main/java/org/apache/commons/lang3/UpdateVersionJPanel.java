@@ -27,6 +27,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.swing.AbstractButton;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -242,8 +243,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			forEach(sorted(distinct(map(
 					filter(stream(dependencies),
-							x -> x != null && Objects.equals(x.groupId,
-									dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null)),
+							x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))),
 					x -> x != null ? x.artifactId : null))), x -> {
 						//
 						if (x == null || dcbmArtifactId == null) {
@@ -274,10 +274,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				Collection<Dependency> dependencies = getDependencies(file);
 				//
 				if (IterableUtils.isEmpty(dependencies = toList(filter(stream(dependencies),
-						x -> x != null
-								&& Objects.equals(x.groupId, dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null)
-								&& Objects.equals(x.artifactId,
-										dcbmArtifactId != null ? dcbmArtifactId.getSelectedItem() : null))))) {
+						x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))
+								&& Objects.equals(x.artifactId, getSelectedItem(dcbmArtifactId)))))) {
 					//
 					testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 							() -> JOptionPane.showMessageDialog(null, "No dependency found"));
@@ -292,11 +290,11 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					final String string = Files.readString(path);
 					//
-					final int index1 = indexOf(string, String.format("<%1$s>%2$s</%1$s>", GROUP_ID,
-							dcbmGroupId != null ? dcbmGroupId.getSelectedItem() : null));
+					final int index1 = indexOf(string,
+							String.format("<%1$s>%2$s</%1$s>", GROUP_ID, getSelectedItem(dcbmGroupId)));
 					//
-					final int index2 = indexOf(string, String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID,
-							dcbmArtifactId != null ? dcbmArtifactId.getSelectedItem() : null));
+					final int index2 = indexOf(string,
+							String.format("<%1$s>%2$s</%1$s>", ARTIFACT_ID, getSelectedItem(dcbmArtifactId)));
 					//
 					final int index3 = indexOf(string, "<version>", Math.max(index1, index2)) + 9;
 					//
@@ -332,6 +330,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static Object getSelectedItem(final ComboBoxModel<?> instance) {
+		return instance != null ? instance.getSelectedItem() : null;
 	}
 
 	private static <T> void forEach(final Stream<T> instance, final Consumer<? super T> action) {

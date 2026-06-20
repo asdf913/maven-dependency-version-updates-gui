@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.swing.AbstractButton;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -141,6 +142,10 @@ public class UpdateVersionJPanelTest {
 				return test;
 				//
 			} else if (proxy instanceof FailableFunction && Objects.equals(name, "apply")) {
+				//
+				return null;
+				//
+			} else if (proxy instanceof ComboBoxModel && Objects.equals(name, "getSelectedItem")) {
 				//
 				return null;
 				//
