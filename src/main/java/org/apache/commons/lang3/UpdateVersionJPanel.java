@@ -199,12 +199,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			if (isFile(file)) {
 				//
-				if (dcbmGroupId != null) {
-					//
-					dcbmGroupId.removeAllElements();
-					//
-				} // for
-					//
+				removeAllElements(dcbmGroupId);
+				//
 				try {
 					//
 					forEach(sorted(distinct(
@@ -223,12 +219,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} else if (Objects.equals(source, jcbGroupId)) {
 			//
-			if (dcbmArtifactId != null) {
-				//
-				dcbmArtifactId.removeAllElements();
-				//
-			} // for
-				//
+			removeAllElements(dcbmArtifactId);
+			//
 			forEach(sorted(distinct(map(
 					filter(stream(dependencies),
 							x -> x != null && Objects.equals(x.groupId, getSelectedItem(dcbmGroupId))),
@@ -326,6 +318,27 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		if (objectLock == null || Narcissus.getField(instance, objectLock) != null) {
 			//
 			instance.pack();
+			//
+		} // if
+			//
+	}
+
+	private static void removeAllElements(final DefaultComboBoxModel<?> instance) {
+		//
+		if (instance == null) {
+			//
+			return;
+			//
+		} // if
+			//
+		final Field objects = testAndApply(x -> IterableUtils.size(x) == 1,
+				toList(filter(stream(FieldUtils.getAllFieldsList(getClass(instance))),
+						f -> Objects.equals(getName(f), "objects"))),
+				x -> IterableUtils.get(x, 0), null);
+		//
+		if (objects == null || Narcissus.getField(instance, objects) != null) {
+			//
+			instance.removeAllElements();
 			//
 		} // if
 			//
