@@ -269,7 +269,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					setSelectedItem(dcbmArtifactId, artifactId);
 					//
-					groupId = null;
+					artifactId = null;
 					//
 					break;
 					//
