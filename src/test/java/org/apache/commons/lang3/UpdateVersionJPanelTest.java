@@ -30,6 +30,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.function.FailableConsumer;
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.function.FailableRunnable;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -39,6 +40,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import org.w3c.dom.NodeList;
 
+import com.google.common.base.Predicates;
 import com.google.common.reflect.Reflection;
 
 import io.github.toolfactory.narcissus.Narcissus;
@@ -46,7 +48,7 @@ import io.github.toolfactory.narcissus.Narcissus;
 public class UpdateVersionJPanelTest {
 
 	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS, METHOD_TEST_AND_GET_AS_BOOLEAN,
-			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN, METHOD_AND = null;
+			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN, METHOD_AND, METHOD_TEST_AND_ACCEPT = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -73,6 +75,9 @@ public class UpdateVersionJPanelTest {
 				.setAccessible(true);
 		//
 		(METHOD_AND = clz.getDeclaredMethod("and", Boolean.TYPE, Boolean.TYPE, boolean[].class)).setAccessible(true);
+		//
+		(METHOD_TEST_AND_ACCEPT = clz.getDeclaredMethod("testAndAccept", Predicate.class, Object.class,
+				FailableConsumer.class)).setAccessible(true);
 		//
 	}
 
@@ -645,6 +650,22 @@ public class UpdateVersionJPanelTest {
 			//
 		} // for
 			//
+	}
+
+	@Test
+	public void testTestAndAccept() throws IllegalAccessException, InvocationTargetException {
+		//
+		final Predicate<?> alwaysTrue = Predicates.alwaysTrue();
+		//
+		Assert.assertNull(
+				METHOD_TEST_AND_ACCEPT != null ? METHOD_TEST_AND_ACCEPT.invoke(null, alwaysTrue, null, null) : null);
+		//
+		Assert.assertNull(
+				METHOD_TEST_AND_ACCEPT != null
+						? METHOD_TEST_AND_ACCEPT.invoke(null, alwaysTrue, null,
+								Reflection.newProxy(FailableConsumer.class, ObjectUtils.getIfNull(ih, IH::new)))
+						: null);
+		//
 	}
 
 }

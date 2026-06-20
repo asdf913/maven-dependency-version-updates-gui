@@ -51,6 +51,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang3.function.FailableConsumer;
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.function.FailableRunnable;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -214,26 +215,24 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					() -> setText(tfFile, testAndApply(UpdateVersionJPanel::isXml, jfc.getSelectedFile(),
 							UpdateVersionJPanel::getAbsolutePath, null)));
 			//
-			final File file = testAndApply(Objects::nonNull, getText(tfFile), File::new, null);
-			//
-			if (isFile(file)) {
+			try {
 				//
-				removeAllElements(dcbmGroupId);
-				//
-				try {
+				testAndAccept(x -> isFile(x), testAndApply(Objects::nonNull, getText(tfFile), File::new, null), x -> {
+					//
+					removeAllElements(dcbmGroupId);
 					//
 					forEach(sorted(
-							distinct(map(stream(dependencies = getDependencies(file)), x -> Dependency.getGroupId(x)))),
-							x -> addElement(dcbmGroupId, x));
+							distinct(map(stream(dependencies = getDependencies(x)), y -> Dependency.getGroupId(y)))),
+							y -> addElement(dcbmGroupId, y));
 					//
 					pack(jFrame);
 					//
-				} catch (final ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
-					//
-					throw new RuntimeException(e);
-					//
-				} // try
-					//
+				});
+				//
+			} catch (final Exception e) {
+				//
+				throw e instanceof RuntimeException re ? re : new RuntimeException(e);
+				//
 			} // if
 				//
 		} else if (Objects.equals(source, jcbGroupId)) {
@@ -319,6 +318,13 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+	}
+
+	private static <T, E extends Throwable> void testAndAccept(final Predicate<T> predicate, final T value,
+			final FailableConsumer<T, E> consumer) throws E {
+		if (test(predicate, value) && consumer != null) {
+			consumer.accept(value);
+		}
 	}
 
 	private static void pack(final Window instance) {
