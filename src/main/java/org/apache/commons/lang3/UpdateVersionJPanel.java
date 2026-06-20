@@ -24,7 +24,9 @@ import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.swing.AbstractButton;
@@ -241,7 +243,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // if
 				//
-			for (int i = 0; i < getSize(dcbmGroupId); i++) {
+			forEach(IntStream.range(0, getSize(dcbmGroupId)), i -> {
 				//
 				if (Objects.equals(groupId, getElementAt(dcbmGroupId, i))) {
 					//
@@ -249,12 +251,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					groupId = null;
 					//
-					break;
-					//
 				} // if
 					//
-			} // for
-				//
+			});
+			//
 			return;
 			//
 		} else if (Objects.equals(source, jcbGroupId)) {
@@ -266,7 +266,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))),
 					x -> Dependency.getArtifactId(x)))), x -> addElement(dcbmArtifactId, x));
 			//
-			for (int i = 0; i < getSize(dcbmArtifactId); i++) {
+			forEach(IntStream.range(0, getSize(dcbmArtifactId)), i -> {
 				//
 				if (Objects.equals(artifactId, getElementAt(dcbmArtifactId, i))) {
 					//
@@ -274,18 +274,22 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 					artifactId = null;
 					//
-					break;
-					//
 				} // if
 					//
-			} // for
-				//
+			});
+			//
 			return;
 			//
 		} // if
 			//
 		actionPerformed(this, source);
 		//
+	}
+
+	private static void forEach(final IntStream instance, final IntConsumer action) {
+		if (instance != null) {
+			instance.forEach(action);
+		}
 	}
 
 	private static void setSelectedItem(final ComboBoxModel<?> instance, final Object item) {
