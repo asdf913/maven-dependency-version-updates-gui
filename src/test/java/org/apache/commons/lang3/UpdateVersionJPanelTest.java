@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -165,7 +166,8 @@ public class UpdateVersionJPanelTest {
 					//
 				} // if
 					//
-			} else if (proxy instanceof Predicate && Objects.equals(name, "test")) {
+			} else if (Boolean.logicalOr(proxy instanceof Predicate, proxy instanceof BiPredicate)
+					&& Objects.equals(name, "test")) {
 				//
 				return test;
 				//

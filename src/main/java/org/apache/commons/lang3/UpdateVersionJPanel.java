@@ -326,11 +326,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		final Iterable<BiPredicate<UpdateVersionJPanel, Object>> biPredicates = Arrays
 				.asList(UpdateVersionJPanel::actionPerformed1, UpdateVersionJPanel::actionPerformed2);
 		//
-		BiPredicate<UpdateVersionJPanel, Object> biPredicate = null;
-		//
 		for (int i = 0; i < IterableUtils.size(biPredicates); i++) {
 			//
-			if ((biPredicate = IterableUtils.get(biPredicates, i)) != null && biPredicate.test(this, source)) {
+			if (test(IterableUtils.get(biPredicates, i), this, source)) {
 				//
 				break;
 				//
@@ -338,6 +336,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // for
 			//
+	}
+
+	private static <T, U> boolean test(final BiPredicate<T, U> instance, final T t, final U u) {
+		return instance != null && instance.test(t, u);
 	}
 
 	private static String replace(final String instance, final char oldChar, final char newChar) {
