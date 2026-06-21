@@ -74,9 +74,18 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static final String ARTIFACT_ID = "artifactId";
 
+	@Target(ElementType.FIELD)
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface Note {
+		String value();
+	}
+
 	private static class Dependency {
 
-		private String groupId, artifactId, version;
+		@Note("Group ID")
+		private String groupId;
+
+		private String artifactId, version;
 
 		private String getGroupId() {
 			return groupId;
@@ -96,12 +105,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	}
 
-	@Target(ElementType.FIELD)
-	@Retention(RetentionPolicy.RUNTIME)
-	private @interface Note {
-		String value();
-	}
-
 	@Note("File")
 	private JTextComponent tfFile = null;
 
@@ -112,7 +115,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private AbstractButton btnUpdate = null;
 
-	private JComboBox<String> jcbGroupId, jcbArtifactId = null;
+	@Note("Group ID")
+	private JComboBox<String> jcbGroupId = null;
+
+	private JComboBox<String> jcbArtifactId = null;
 
 	@Note("Group ID")
 	private DefaultComboBoxModel<String> dcbmGroupId = null;
