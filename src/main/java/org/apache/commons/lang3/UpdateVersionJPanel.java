@@ -311,16 +311,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			return;
 			//
-		} else if (Objects.equals(source, jcbArtifactId)) {
-			//
-			setText(tfVersion, Dependency.getVersion(testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
-					stream(dependencies),
-					x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
-							Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))),
-					x -> IterableUtils.get(x, 0), null)));
-			//
-			return;
-			//
 		} // if
 			//
 		final Iterable<BiPredicate<UpdateVersionJPanel, Object>> biPredicates = Arrays
@@ -506,9 +496,23 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 					//
 			} // if
 				//
+			return true;
+			//
+		} else if (Objects.equals(source, instance.jcbArtifactId)) {
+			//
+			setText(instance.tfVersion,
+					Dependency.getVersion(testAndApply(x -> IterableUtils.size(x) == 1,
+							toList(filter(stream(instance.dependencies), x -> Boolean.logicalAnd(
+									Objects.equals(Dependency.getGroupId(x), getSelectedItem(instance.dcbmGroupId)),
+									Objects.equals(Dependency.getArtifactId(x),
+											getSelectedItem(instance.dcbmArtifactId))))),
+							x -> IterableUtils.get(x, 0), null)));
+			//
+			return true;
+			//
 		} // if
 			//
-		return true;
+		return false;
 		//
 	}
 
