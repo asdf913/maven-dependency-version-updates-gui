@@ -17,12 +17,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -321,8 +323,21 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} // if
 			//
-		actionPerformed(this, source);
+		final Iterable<BiPredicate<UpdateVersionJPanel, Object>> biPredicates = Arrays
+				.asList(UpdateVersionJPanel::actionPerformed1, UpdateVersionJPanel::actionPerformed2);
 		//
+		BiPredicate<UpdateVersionJPanel, Object> biPredicate = null;
+		//
+		for (int i = 0; i < IterableUtils.size(biPredicates); i++) {
+			//
+			if ((biPredicate = IterableUtils.get(biPredicates, i)) != null && biPredicate.test(this, source)) {
+				//
+				break;
+				//
+			} // if
+				//
+		} // for
+			//
 	}
 
 	private static String replace(final String instance, final char oldChar, final char newChar) {
@@ -363,11 +378,11 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		return instance != null ? instance.getSize() : 0;
 	}
 
-	private static void actionPerformed(final UpdateVersionJPanel instance, final Object source) {
+	private static boolean actionPerformed1(final UpdateVersionJPanel instance, final Object source) {
 		//
 		if (instance == null) {
 			//
-			return;
+			return false;
 			//
 		} // if
 			//
@@ -380,7 +395,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				testAndRun(Boolean.logicalAnd(!GraphicsEnvironment.isHeadless(), !isTestMode()),
 						() -> JOptionPane.showMessageDialog(null, "Please select a file"));
 				//
-				return;
+				return true;
 				//
 			} // if
 				//
@@ -443,7 +458,23 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 			} // try
 				//
-		} else if (Objects.equals(source, instance.btnCheckVersion)) {
+			return true;
+			//
+		} // if
+			//
+		return false;
+		//
+	}
+
+	private static boolean actionPerformed2(final UpdateVersionJPanel instance, final Object source) {
+		//
+		if (instance == null) {
+			//
+			return false;
+			//
+		} // if
+			//
+		if (Objects.equals(source, instance.btnCheckVersion)) {
 			//
 			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
 					stream(instance.dependencies),
@@ -475,6 +506,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 		} // if
 			//
+		return true;
+		//
 	}
 
 	private static <T, E extends Throwable> void testAndAccept(final Predicate<T> predicate, final T value,
