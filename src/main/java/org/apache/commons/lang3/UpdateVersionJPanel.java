@@ -319,35 +319,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			return;
 			//
-		} else if (Objects.equals(source, btnCheckVersion)) {
-			//
-			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
-					stream(dependencies),
-					x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
-							Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))),
-					x -> IterableUtils.get(x, 0), null);
-			//
-			if (dependency != null) {
-				//
-				try (final InputStream is = new URL(
-						String.format("https://repo1.maven.org/maven2/%1$s/%2$s/maven-metadata.xml",
-								replace(dependency.groupId, '.', '/'), replace(dependency.artifactId, '.', '/')))
-						.openStream()) {
-					//
-					setText(tfVersion,
-							Objects.toString(evaluate(newXPath(XPathFactory.newDefaultInstance()),
-									"/*/versioning/release/text()",
-									parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), is),
-									XPathConstants.STRING)));
-					//
-				} catch (final IOException | ParserConfigurationException | XPathExpressionException | SAXException e) {
-					//
-					throw new RuntimeException(e);
-					//
-				} // try
-					//
-			} // if
-				//
 		} // if
 			//
 		actionPerformed(this, source);
@@ -471,6 +442,36 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				throw new RuntimeException(e);
 				//
 			} // try
+				//
+		} else if (Objects.equals(source, instance.btnCheckVersion)) {
+			//
+			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
+					stream(instance.dependencies),
+					x -> Boolean.logicalAnd(
+							Objects.equals(Dependency.getGroupId(x), getSelectedItem(instance.dcbmGroupId)),
+							Objects.equals(Dependency.getArtifactId(x), getSelectedItem(instance.dcbmArtifactId))))),
+					x -> IterableUtils.get(x, 0), null);
+			//
+			if (dependency != null) {
+				//
+				try (final InputStream is = new URL(
+						String.format("https://repo1.maven.org/maven2/%1$s/%2$s/maven-metadata.xml",
+								replace(dependency.groupId, '.', '/'), replace(dependency.artifactId, '.', '/')))
+						.openStream()) {
+					//
+					setText(instance.tfVersion,
+							Objects.toString(evaluate(newXPath(XPathFactory.newDefaultInstance()),
+									"/*/versioning/release/text()",
+									parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), is),
+									XPathConstants.STRING)));
+					//
+				} catch (final IOException | ParserConfigurationException | XPathExpressionException | SAXException e) {
+					//
+					throw new RuntimeException(e);
+					//
+				} // try
+					//
+			} // if
 				//
 		} // if
 			//
