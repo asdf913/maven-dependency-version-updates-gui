@@ -76,6 +76,8 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static final String ARTIFACT_ID = "artifactId";
 
+	private static final String VALUE = "value";
+
 	@Target(ElementType.FIELD)
 	@Retention(RetentionPolicy.RUNTIME)
 	private @interface Note {
@@ -359,7 +361,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		final Field value = testAndApply(x -> IterableUtils.size(x) == 1,
 				toList(filter(stream(FieldUtils.getAllFieldsList(getClass(instance))),
-						f -> Objects.equals(getName(f), "value"))),
+						f -> Objects.equals(getName(f), VALUE))),
 				x -> IterableUtils.get(x, 0), null);
 		//
 		return value == null || Narcissus.getField(instance, value) != null ? instance.replace(oldChar, newChar)
@@ -683,7 +685,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		} // if
 			//
 		final Field value = testAndApply(x -> IterableUtils.size(x) == 1, toList(
-				filter(stream(FieldUtils.getAllFieldsList(getClass(a))), f -> Objects.equals(getName(f), "value"))),
+				filter(stream(FieldUtils.getAllFieldsList(getClass(a))), f -> Objects.equals(getName(f), VALUE))),
 				x -> IterableUtils.get(x, 0), null);
 		//
 		return value == null || Narcissus.getField(a, value) != null ? a.indexOf(b) : -1;
@@ -718,7 +720,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		final Field value = testAndApply(x -> IterableUtils.size(x) == 1,
 				toList(filter(
 						stream(testAndApply(Objects::nonNull, getClass(text), FieldUtils::getAllFieldsList, null)),
-						f -> Objects.equals(getName(f), "value"))),
+						f -> Objects.equals(getName(f), VALUE))),
 				x -> IterableUtils.get(x, 0), null);
 		//
 		if (value == null || Narcissus.getField(text, value) != null) {
