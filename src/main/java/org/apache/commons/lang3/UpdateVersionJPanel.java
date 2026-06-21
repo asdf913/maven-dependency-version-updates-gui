@@ -85,7 +85,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		@Note("Group ID")
 		private String groupId;
 
-		private String artifactId, version;
+		@Note("Artifact ID")
+		private String artifactId;
+
+		private String version;
 
 		private String getGroupId() {
 			return groupId;
