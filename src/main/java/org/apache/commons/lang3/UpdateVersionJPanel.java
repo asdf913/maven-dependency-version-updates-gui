@@ -288,29 +288,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			return;
 			//
-		} else if (Objects.equals(source, jcbGroupId)) {
-			//
-			removeAllElements(dcbmArtifactId);
-			//
-			forEach(sorted(distinct(map(
-					filter(stream(dependencies),
-							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))),
-					x -> Dependency.getArtifactId(x)))), x -> addElement(dcbmArtifactId, x));
-			//
-			forEach(IntStream.range(0, getSize(dcbmArtifactId)), i -> {
-				//
-				if (Objects.equals(artifactId, getElementAt(dcbmArtifactId, i))) {
-					//
-					setSelectedItem(dcbmArtifactId, artifactId);
-					//
-					artifactId = null;
-					//
-				} // if
-					//
-			});
-			//
-			return;
-			//
 		} // if
 			//
 		final Iterable<BiPredicate<UpdateVersionJPanel, Object>> biPredicates = Arrays
@@ -507,6 +484,33 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 									Objects.equals(Dependency.getArtifactId(x),
 											getSelectedItem(instance.dcbmArtifactId))))),
 							x -> IterableUtils.get(x, 0), null)));
+			//
+			return true;
+			//
+
+		} else if (Objects.equals(source, instance.jcbGroupId)) {
+			//
+			removeAllElements(instance.dcbmArtifactId);
+			//
+			forEach(sorted(
+					distinct(map(
+							filter(stream(instance.dependencies),
+									x -> Objects.equals(Dependency.getGroupId(x),
+											getSelectedItem(instance.dcbmGroupId))),
+							x -> Dependency.getArtifactId(x)))),
+					x -> addElement(instance.dcbmArtifactId, x));
+			//
+			forEach(IntStream.range(0, getSize(instance.dcbmArtifactId)), i -> {
+				//
+				if (Objects.equals(instance.artifactId, getElementAt(instance.dcbmArtifactId, i))) {
+					//
+					setSelectedItem(instance.dcbmArtifactId, instance.artifactId);
+					//
+					instance.artifactId = null;
+					//
+				} // if
+					//
+			});
 			//
 			return true;
 			//
