@@ -128,7 +128,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 	@Note("File")
 	private AbstractButton btnFile = null;
 
-	private AbstractButton btnUpdate, btnCheckVersion = null;
+	@Note("Update")
+	private AbstractButton btnUpdate = null;
+
+	private AbstractButton btnCheckVersion = null;
 
 	@Note("Group ID")
 	private JComboBox<String> jcbGroupId = null;
