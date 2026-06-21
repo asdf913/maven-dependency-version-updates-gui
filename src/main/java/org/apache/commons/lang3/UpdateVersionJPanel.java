@@ -106,6 +106,14 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			return instance != null ? instance.getArtifactId() : null;
 		}
 
+		private String getVersion() {
+			return version;
+		}
+
+		private static String getVersion(final Dependency instance) {
+			return instance != null ? instance.getVersion() : null;
+		}
+
 	}
 
 	@Note("File")
@@ -292,13 +300,11 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} else if (Objects.equals(source, jcbArtifactId)) {
 			//
-			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
+			setText(tfVersion, Dependency.getVersion(testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
 					stream(dependencies),
 					x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
 							Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))),
-					x -> IterableUtils.get(x, 0), null);
-			//
-			setText(tfVersion, dependency != null ? dependency.version : null);
+					x -> IterableUtils.get(x, 0), null)));
 			//
 			return;
 			//

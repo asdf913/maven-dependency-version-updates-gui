@@ -541,6 +541,12 @@ public class UpdateVersionJPanelTest {
 		//
 		instance.actionPerformed(new ActionEvent(jcbGroupId, 0, null));
 		//
+		final JComboBox<?> jcbArtifactId = new JComboBox<>();
+		//
+		FieldUtils.writeDeclaredField(instance, "jcbArtifactId", jcbArtifactId, true);
+		//
+		instance.actionPerformed(new ActionEvent(jcbArtifactId, 0, null));
+		//
 	}
 
 	@Test
