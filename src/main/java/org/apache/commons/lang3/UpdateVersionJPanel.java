@@ -289,10 +289,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} else if (Objects.equals(source, jcbArtifactId)) {
 			//
-			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1,
-					toList(filter(stream(dependencies),
-							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))
-									&& Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId)))),
+			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
+					stream(dependencies),
+					x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
+							Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))),
 					x -> IterableUtils.get(x, 0), null);
 			//
 			setText(tfVersion, dependency != null ? dependency.version : null);
