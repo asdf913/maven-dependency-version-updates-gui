@@ -6,12 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -124,7 +126,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 	@Note("File")
 	private AbstractButton btnFile = null;
 
-	private AbstractButton btnUpdate = null;
+	private AbstractButton btnUpdate, btnCheckVersion = null;
 
 	@Note("Group ID")
 	private JComboBox<String> jcbGroupId = null;
@@ -165,7 +167,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} // if
 			//
-		add(new JLabel("File"));
+		add(new JLabel("Select"));
 		//
 		final String growx = "growx";
 		//
@@ -175,7 +177,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		//
 		final String wrap = "wrap";
 		//
-		add(btnFile = new JButton("File"), wrap);
+		add(btnFile = new JButton("File"), String.join(",", growx, wrap));
 		//
 		btnFile.addActionListener(this);
 		//
@@ -194,7 +196,11 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		//
 		add(new JLabel("Version"));
 		//
-		add(tfVersion = new JTextField(), String.join(",", growx, wrap));
+		add(tfVersion = new JTextField(), growx);
+		//
+		add(btnCheckVersion = new JButton("Check"), wrap);
+		//
+		btnCheckVersion.addActionListener(this);
 		//
 		add(new JLabel());
 		//
@@ -259,7 +265,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				//
 				throw e instanceof RuntimeException re ? re : new RuntimeException(e);
 				//
-			} // if
+			} // try
 				//
 			forEach(IntStream.range(0, getSize(dcbmGroupId)), i -> {
 				//
@@ -308,9 +314,56 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 			return;
 			//
+		} else if (Objects.equals(source, btnCheckVersion)) {
+			//
+			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1, toList(filter(
+					stream(dependencies),
+					x -> Boolean.logicalAnd(Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId)),
+							Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId))))),
+					x -> IterableUtils.get(x, 0), null);
+			//
+			if (dependency != null) {
+				//
+				try (final InputStream is = new URL(
+						String.format("https://repo1.maven.org/maven2/%1$s/%2$s/maven-metadata.xml",
+								replace(dependency.groupId, '.', '/'), replace(dependency.artifactId, '.', '/')))
+						.openStream()) {
+					//
+					setText(tfVersion,
+							Objects.toString(evaluate(newXPath(XPathFactory.newDefaultInstance()),
+									"/*/versioning/release/text()",
+									parse(newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance()), is),
+									XPathConstants.STRING)));
+					//
+				} catch (final IOException | ParserConfigurationException | XPathExpressionException | SAXException e) {
+					//
+					throw new RuntimeException(e);
+					//
+				} // try
+					//
+			} // if
+				//
 		} // if
 			//
 		actionPerformed(this, source);
+		//
+	}
+
+	private static String replace(final String instance, final char oldChar, final char newChar) {
+		//
+		if (instance == null) {
+			//
+			return instance;
+			//
+		} // if
+			//
+		final Field value = testAndApply(x -> IterableUtils.size(x) == 1,
+				toList(filter(stream(FieldUtils.getAllFieldsList(getClass(instance))),
+						f -> Objects.equals(getName(f), "value"))),
+				x -> IterableUtils.get(x, 0), null);
+		//
+		return value == null || Narcissus.getField(instance, value) != null ? instance.replace(oldChar, newChar)
+				: instance;
 		//
 	}
 
@@ -574,6 +627,33 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static Document parse(final DocumentBuilder instance, final File file) throws SAXException, IOException {
 		return instance != null && file != null && file.getPath() != null ? instance.parse(file) : null;
+	}
+
+	private static Document parse(final DocumentBuilder instance, final InputStream is)
+			throws SAXException, IOException {
+		//
+		if (instance == null || is == null) {
+			//
+			return null;
+			//
+		} // if
+			//
+		if (is.markSupported()) {
+			//
+			final byte[] bs = is.readAllBytes();
+			//
+			if (bs == null || bs.length == 0) {
+				//
+				return null;
+				//
+			} // if
+				//
+			is.reset();
+			//
+		} // if
+			//
+		return instance.parse(is);
+		//
 	}
 
 	private static boolean isFile(final File instance) {

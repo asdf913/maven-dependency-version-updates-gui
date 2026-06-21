@@ -1,7 +1,9 @@
 package org.apache.commons.lang3;
 
 import java.awt.event.ActionEvent;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +51,8 @@ import io.github.toolfactory.narcissus.Narcissus;
 public class UpdateVersionJPanelTest {
 
 	private static Method METHOD_CAST, METHOD_ADD, METHOD_GET_NAME, METHOD_GET_CLASS, METHOD_TEST_AND_GET_AS_BOOLEAN,
-			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN, METHOD_AND, METHOD_TEST_AND_ACCEPT = null;
+			METHOD_IS_FILE, METHOD_NEW_DOCUMENT_BUILDER, METHOD_TEST_AND_RUN, METHOD_AND, METHOD_TEST_AND_ACCEPT,
+			METHOD_PARSE, METHOD_REPLACE = null;
 
 	@BeforeSuite
 	void beforeSuite() throws NoSuchMethodException {
@@ -79,6 +82,11 @@ public class UpdateVersionJPanelTest {
 		//
 		(METHOD_TEST_AND_ACCEPT = clz.getDeclaredMethod("testAndAccept", Predicate.class, Object.class,
 				FailableConsumer.class)).setAccessible(true);
+		//
+		(METHOD_PARSE = clz.getDeclaredMethod("parse", DocumentBuilder.class, InputStream.class)).setAccessible(true);
+		//
+		(METHOD_REPLACE = clz.getDeclaredMethod("replace", String.class, Character.TYPE, Character.TYPE))
+				.setAccessible(true);
 		//
 	}
 
@@ -281,6 +289,10 @@ public class UpdateVersionJPanelTest {
 					//
 					add(collection, Boolean.valueOf(false));
 					//
+				} else if (Objects.equals(parameterType, Character.TYPE)) {
+					//
+					add(collection, Character.valueOf(' '));
+					//
 				} else {
 					//
 					add(collection, null);
@@ -353,6 +365,8 @@ public class UpdateVersionJPanelTest {
 							Arrays.equals(parameterTypes, new Class[] { String[].class }))
 					|| Boolean.logicalAnd(Objects.equals(name, "indexOf"),
 							Arrays.equals(parameterTypes, new Class[] { String.class, String.class, Integer.TYPE }))
+					|| Boolean.logicalAnd(Objects.equals(name, "replace"),
+							Arrays.equals(parameterTypes, new Class[] { String.class, Character.TYPE, Character.TYPE }))
 					|| Boolean.logicalAnd(Objects.equals(name, "and"), Arrays.equals(parameterTypes,
 							new Class[] { Boolean.TYPE, Boolean.TYPE, boolean[].class }))) {
 				//
@@ -399,6 +413,10 @@ public class UpdateVersionJPanelTest {
 				} else if (Objects.equals(parameterType, Integer.TYPE)) {
 					//
 					add(collection, Integer.valueOf(0));
+					//
+				} else if (Objects.equals(parameterType, InputStream.class)) {
+					//
+					add(collection, new ByteArrayInputStream(new byte[] {}));
 					//
 				} else if (parameterType != null && parameterType.isArray()) {
 					//
@@ -515,6 +533,8 @@ public class UpdateVersionJPanelTest {
 			//
 		instance.actionPerformed(new ActionEvent("", 0, null));
 		//
+		// btnUpdate
+		//
 		final AbstractButton btnUpdate = new JButton();
 		//
 		FieldUtils.writeDeclaredField(instance, "btnUpdate", btnUpdate, true);
@@ -533,6 +553,8 @@ public class UpdateVersionJPanelTest {
 		//
 		instance.actionPerformed(actionEvent);
 		//
+		// jcbGroupId
+		//
 		final JComboBox<?> jcbGroupId = new JComboBox<>();
 		//
 		FieldUtils.writeDeclaredField(instance, "jcbGroupId", jcbGroupId, true);
@@ -541,11 +563,21 @@ public class UpdateVersionJPanelTest {
 		//
 		instance.actionPerformed(new ActionEvent(jcbGroupId, 0, null));
 		//
+		// jcbArtifactId
+		//
 		final JComboBox<?> jcbArtifactId = new JComboBox<>();
 		//
 		FieldUtils.writeDeclaredField(instance, "jcbArtifactId", jcbArtifactId, true);
 		//
 		instance.actionPerformed(new ActionEvent(jcbArtifactId, 0, null));
+		//
+		// btnCheckVersion
+		//
+		final AbstractButton btnCheckVersion = new JButton();
+		//
+		FieldUtils.writeDeclaredField(instance, "btnCheckVersion", btnCheckVersion, true);
+		//
+		instance.actionPerformed(new ActionEvent(btnCheckVersion, 0, null));
 		//
 	}
 
@@ -691,6 +723,26 @@ public class UpdateVersionJPanelTest {
 						? METHOD_TEST_AND_ACCEPT.invoke(null, alwaysTrue, null,
 								Reflection.newProxy(FailableConsumer.class, ObjectUtils.getIfNull(ih, IH::new)))
 						: null);
+		//
+	}
+
+	@Test
+	public void testParse() throws Throwable {
+		//
+		final DocumentBuilder db = newDocumentBuilder(DocumentBuilderFactory.newDefaultInstance());
+		//
+		Assert.assertNull(METHOD_PARSE != null ? METHOD_PARSE.invoke(null, db, null) : null);
+		//
+		Assert.assertNotNull(
+				METHOD_PARSE != null ? METHOD_PARSE.invoke(null, db, new ByteArrayInputStream("<a/>".getBytes()))
+						: null);
+		//
+	}
+
+	@Test
+	public void testReplace() throws IllegalAccessException, InvocationTargetException {
+		//
+		Assert.assertEquals(METHOD_REPLACE != null ? METHOD_REPLACE.invoke(null, ".", '.', '/') : null, "/");
 		//
 	}
 
