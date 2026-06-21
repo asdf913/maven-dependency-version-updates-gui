@@ -76,9 +76,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private static class Dependency {
 
-		private String groupId;
-
-		private String artifactId;
+		private String groupId, artifactId, version;
 
 		private String getGroupId() {
 			return groupId;
@@ -114,7 +112,7 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 
 	private AbstractButton btnUpdate = null;
 
-	private JComboBox<String> jcbGroupId = null;
+	private JComboBox<String> jcbGroupId, jcbArtifactId = null;
 
 	@Note("Group ID")
 	private DefaultComboBoxModel<String> dcbmGroupId = null;
@@ -172,7 +170,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		//
 		add(new JLabel("Artifact ID"));
 		//
-		add(new JComboBox<>(dcbmArtifactId = new DefaultComboBoxModel<>()), String.join(",", growx, wrap));
+		add(jcbArtifactId = new JComboBox<>(dcbmArtifactId = new DefaultComboBoxModel<>()),
+				String.join(",", growx, wrap));
+		//
+		jcbArtifactId.addActionListener(this);
 		//
 		add(new JLabel("Version"));
 		//
@@ -277,6 +278,18 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 				} // if
 					//
 			});
+			//
+			return;
+			//
+		} else if (Objects.equals(source, jcbArtifactId)) {
+			//
+			final Dependency dependency = testAndApply(x -> IterableUtils.size(x) == 1,
+					toList(filter(stream(dependencies),
+							x -> Objects.equals(Dependency.getGroupId(x), getSelectedItem(dcbmGroupId))
+									&& Objects.equals(Dependency.getArtifactId(x), getSelectedItem(dcbmArtifactId)))),
+					x -> IterableUtils.get(x, 0), null);
+			//
+			setText(tfVersion, dependency != null ? dependency.version : null);
 			//
 			return;
 			//
@@ -490,6 +503,9 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			dependency.artifactId = Objects
 					.toString(evaluate(xp, "*[local-name()=\"artifactId\"]", node, XPathConstants.STRING));
 			//
+			dependency.version = Objects
+					.toString(evaluate(xp, "*[local-name()=\"version\"]", node, XPathConstants.STRING));
+			//
 			add(dependencies = ObjectUtils.getIfNull(dependencies, ArrayList::new), dependency);
 			//
 		} // for
@@ -604,8 +620,10 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 			//
 		} // if
 			//
-		final Field value = testAndApply(x -> IterableUtils.size(x) == 1, toList(
-				filter(stream(FieldUtils.getAllFieldsList(getClass(text))), f -> Objects.equals(getName(f), "value"))),
+		final Field value = testAndApply(x -> IterableUtils.size(x) == 1,
+				toList(filter(
+						stream(testAndApply(Objects::nonNull, getClass(text), FieldUtils::getAllFieldsList, null)),
+						f -> Objects.equals(getName(f), "value"))),
 				x -> IterableUtils.get(x, 0), null);
 		//
 		if (value == null || Narcissus.getField(text, value) != null) {
@@ -680,12 +698,6 @@ public class UpdateVersionJPanel extends JPanel implements ActionListener {
 		if (containsKey(map, ARTIFACT_ID)) {
 			//
 			instance.artifactId = get(map, ARTIFACT_ID);
-			//
-		} // if
-			//
-		if (containsKey(map, "version")) {
-			//
-			setText(instance.tfVersion, get(map, "version"));
 			//
 		} // if
 			//

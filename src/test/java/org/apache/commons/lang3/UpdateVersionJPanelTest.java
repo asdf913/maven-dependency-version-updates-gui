@@ -611,6 +611,11 @@ public class UpdateVersionJPanelTest {
 				METHOD_AND != null ? METHOD_AND.invoke(null, Boolean.TRUE, Boolean.TRUE, new boolean[] { true }) : null,
 				Boolean.TRUE);
 		//
+		Assert.assertEquals(
+				METHOD_AND != null ? METHOD_AND.invoke(null, Boolean.TRUE, Boolean.TRUE, new boolean[] { false })
+						: null,
+				Boolean.FALSE);
+		//
 	}
 
 	@Test
